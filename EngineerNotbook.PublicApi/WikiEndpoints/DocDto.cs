@@ -16,9 +16,6 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
         public string CreatedByUserId { get; set; }
         public string EditedByUserId { get; set; }
 
-        public string CreatedByUsername { get; set; }
-        public string EditedByUsername { get; set; }
-
         public List<TagDto> Tags { get; set; } = new();
     }
 }

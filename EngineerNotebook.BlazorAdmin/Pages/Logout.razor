@@ -1,0 +1,14 @@
+@page "/logout"
+@inject IJSRuntime JsRuntime
+@inject HttpClient HttpClient
+@inherits Helpers.BlazorComponent
+
+@code{
+
+    protected override async Task OnInitializedAsync()
+    {
+        await HttpClient.PostAsync("Identity/Account/Logout", null);
+        await new Route(JsRuntime).RouteOutside("/Identity/Account/Login");
+    }
+
+}

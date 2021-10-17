@@ -53,7 +53,7 @@ namespace FunctionalTests.PublicApi.WikiEndpoints
             Assert.Equal(_testWikiTitle, model.Doc.Title);
             Assert.Equal(_testWikiDescription, model.Doc.Description);
             Assert.Equal(_testWikiContent, model.Doc.Contents);
-            Assert.Equal("admin@ddc.org", model.Doc.CreatedByUsername);
+            Assert.Equal("admin@ddc.org", model.Doc.CreatedByUserId);
         }
 
         [Fact]

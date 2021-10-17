@@ -41,10 +41,6 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
             var response = new UpdateDocResponse(request.CorrelationId());
 
             var username = HttpContext.User.Identity?.Name ?? "";
-            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-
-            if (userId is null)
-                return Unauthorized();
 
             var existingItem = await _context.GetByIdAsync(request.Id, cancellationToken);
             
@@ -52,11 +48,9 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
             existingItem.Title = request.Title;
             existingItem.Description = request.Description;
             existingItem.EditedAt = DateTimeOffset.UtcNow;
-            existingItem.EditedByUserId = userId;
+            existingItem.EditedByUserId = username;
 
             await _context.UpdateAsync(existingItem, cancellationToken);
-            
-            var createdUser = await _userManager.FindByIdAsync(existingItem.CreatedByUserId);
 
             var dto = new DocDto()
             {
@@ -68,8 +62,6 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
                 CreatedByUserId = existingItem.CreatedByUserId,
                 EditedByUserId = existingItem.EditedByUserId,
                 Contents = existingItem.Contents,
-                EditedByUsername = username,
-                CreatedByUsername = createdUser.UserName ?? "Unknown"
             };
 
             response.Doc = dto;

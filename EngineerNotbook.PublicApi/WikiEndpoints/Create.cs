@@ -39,18 +39,14 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
         ]
         public override async Task<ActionResult<CreateDocResponse>> HandleAsync(CreateDocRequest request, CancellationToken cancellationToken = default)
         {
-            string userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             string username = HttpContext.User.Identity?.Name ?? "";
-
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
 
             var doc = new Documentation
             {
                 Title = request.Title,
                 Description = request.Description,
                 Contents = request.Contents,
-                CreatedByUserId = userId
+                CreatedByUserId = username
             };
 
             doc = await _docRepo.AddAsync(doc, cancellationToken);
@@ -62,7 +58,6 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
                 Description = doc.Description,
                 Contents = doc.Contents,
                 CreatedByUserId = doc.CreatedByUserId,
-                CreatedByUsername = username
             };
 
             var response = new CreateDocResponse(request.CorrelationId());
