@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineersNotebook", "EngineersNotebook\EngineersNotebook.csproj", "{161FCB66-6704-4089-BB16-822762A48722}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CF46DB2C-5A91-4555-BAC2-201ACF67DF12}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.Core", "EngineerNotebook.Core\EngineerNotebook.Core.csproj", "{15D27509-4328-42C4-84EE-5E3265CC2E10}"
@@ -18,10 +16,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{161FCB66-6704-4089-BB16-822762A48722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{161FCB66-6704-4089-BB16-822762A48722}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{161FCB66-6704-4089-BB16-822762A48722}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{161FCB66-6704-4089-BB16-822762A48722}.Release|Any CPU.Build.0 = Release|Any CPU
 		{15D27509-4328-42C4-84EE-5E3265CC2E10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{15D27509-4328-42C4-84EE-5E3265CC2E10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15D27509-4328-42C4-84EE-5E3265CC2E10}.Release|Any CPU.ActiveCfg = Release|Any CPU
