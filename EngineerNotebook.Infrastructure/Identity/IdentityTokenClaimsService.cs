@@ -11,11 +11,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EngineerNotebook.Infrastructure.Identity
 {
-    public class IdentityTokenClaimService : ITokenClaimService
+    public class IdentityTokenClaimsService : ITokenClaimsService
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public IdentityTokenClaimService(UserManager<ApplicationUser> userManager)
+        public IdentityTokenClaimsService(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }

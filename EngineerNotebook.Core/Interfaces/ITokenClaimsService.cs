@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace EngineerNotebook.Core.Interfaces
 {
-    public interface ITokenClaimService
+    public interface ITokenClaimsService
     {
         Task<string> GetTokenAsync(string userName);
     }

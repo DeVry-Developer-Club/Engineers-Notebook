@@ -41,8 +41,9 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
         {
             string userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             string username = HttpContext.User.Identity?.Name ?? "";
-            
-            Guard.Against.Null(userId, "User Id");
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
 
             var doc = new Documentation
             {

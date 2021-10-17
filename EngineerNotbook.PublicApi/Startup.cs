@@ -32,12 +32,19 @@ namespace EngineerNotebook.PublicApi
             Configuration = configuration;
         }
 
-        private void ConfigureInMemoryDatabase(IServiceCollection services)
+        private void ConfigureInMemoryDatabases(IServiceCollection services)
         {
             services.AddDbContext<EngineerDbContext>(c => c.UseInMemoryDatabase("EngineerContext"));
             services.AddDbContext<AppIdentityDbContext>(c => c.UseInMemoryDatabase("Identity"));
         }
-
+        
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+            // use in-memory database
+            ConfigureInMemoryDatabases(services);
+            ConfigureServices(services);
+        }
+        
         private void ConfigureMySqlDatabase(IServiceCollection services)
         {
             services.AddDbContext<EngineerDbContext>(c =>
@@ -47,21 +54,15 @@ namespace EngineerNotebook.PublicApi
             services.AddDbContext<AppIdentityDbContext>(c =>
                 c.UseMySQL(Configuration.GetConnectionString("IdentityConnection")));
         }
-        
+
+        public void ConfigureTestingServices(IServiceCollection services)
+        {
+            ConfigureInMemoryDatabases(services);
+            ConfigureServices(services);
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
-            #region Database Registration
-
-            bool useInMemoryDatabase = Configuration.GetValue<bool>("UseInMemoryDatabase");
-
-            if (useInMemoryDatabase)
-                ConfigureInMemoryDatabase(services);
-            else
-                ConfigureMySqlDatabase(services);
-
-            #endregion
-            
-            
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppIdentityDbContext>()
                 .AddDefaultTokenProviders();
@@ -69,7 +70,7 @@ namespace EngineerNotebook.PublicApi
             #region Utilities
 
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
-            services.AddScoped<ITokenClaimService, IdentityTokenClaimService>();
+            services.AddScoped<ITokenClaimsService, IdentityTokenClaimsService>();
             
             services.AddSingleton<IHtmlToPdfConverter, HtmlToPdfConverter>();
             services.AddSingleton<IRazorToString, RazorToString>();

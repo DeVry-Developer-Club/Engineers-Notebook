@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
+using EngineerNotebook.Core.Interfaces;
 using EngineerNotebook.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +14,9 @@ namespace EngineerNotebook.PublicApi.AuthEndpoints
         .WithResponse<AuthenticateResponse>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IdentityTokenClaimService _tokenClaimsService;
+        private readonly ITokenClaimsService  _tokenClaimsService;
 
-        public Authenticate(SignInManager<ApplicationUser> signInManager, IdentityTokenClaimService tokenClaimsService)
+        public Authenticate(SignInManager<ApplicationUser> signInManager, ITokenClaimsService  tokenClaimsService)
         {
             _signInManager = signInManager;
             _tokenClaimsService = tokenClaimsService;
