@@ -38,19 +38,36 @@ namespace EngineerNotebook.PublicApi
             services.AddDbContext<AppIdentityDbContext>(c => c.UseInMemoryDatabase("Identity"));
         }
 
-        public void ConfigureTestingServices(IServiceCollection services)
+        private void ConfigureMySqlDatabase(IServiceCollection services)
         {
-            ConfigureInMemoryDatabase(services);
+            services.AddDbContext<EngineerDbContext>(c =>
+                c.UseMySQL(Configuration.GetConnectionString("EngineerConnection"), 
+                    x=>x.MigrationsAssembly(GetType().Assembly.FullName)));
+            
+            services.AddDbContext<AppIdentityDbContext>(c =>
+                c.UseMySQL(Configuration.GetConnectionString("IdentityConnection")));
         }
         
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureInMemoryDatabase(services);
+            #region Database Registration
+
+            bool useInMemoryDatabase = Configuration.GetValue<bool>("UseInMemoryDatabase");
+
+            if (useInMemoryDatabase)
+                ConfigureInMemoryDatabase(services);
+            else
+                ConfigureMySqlDatabase(services);
+
+            #endregion
+            
             
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppIdentityDbContext>()
                 .AddDefaultTokenProviders();
-            
+
+            #region Utilities
+
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
             services.AddScoped<ITokenClaimService, IdentityTokenClaimService>();
             
@@ -60,6 +77,15 @@ namespace EngineerNotebook.PublicApi
             services.AddRazorTemplating();
             RazorTemplateEngine.Initialize();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            
+            #endregion
+
+            var baseUrlConfig = new BaseUrlConfiguration();
+            Configuration.Bind(BaseUrlConfiguration.CONFIG_NAME, baseUrlConfig);
+
+            services.AddMemoryCache();
+
+            #region Authentication
 
             var key = Encoding.ASCII.GetBytes(AuthorizationConstants.JWT_SECRET_KEY);
             services.AddAuthentication(config =>
@@ -78,7 +104,7 @@ namespace EngineerNotebook.PublicApi
                         ValidateIssuer = false
                     };
                 });
-            var baseUrlConfig = new BaseUrlConfiguration();
+            
             services.AddCors(options =>
             {
                 options.AddPolicy(name: CORS_POLICY,
@@ -91,7 +117,9 @@ namespace EngineerNotebook.PublicApi
                         builder.AllowAnyHeader();
                     });
             });
-
+            
+            #endregion
+            
             services.AddControllers();
             services.AddMediatR(typeof(Tag).Assembly);
             services.AddAutoMapper(typeof(Startup).Assembly);

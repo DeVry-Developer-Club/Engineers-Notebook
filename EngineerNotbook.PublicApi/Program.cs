@@ -25,7 +25,8 @@ namespace EngineerNotebook.PublicApi
                 try
                 {
                     var context = services.GetRequiredService<EngineerDbContext>();
-
+                    await EngineerDbContextSeed.SeedAsync(context, loggerFactory);
+                    
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     await AppIdentityDbContextSeed.SeedAsync(userManager, roleManager);
