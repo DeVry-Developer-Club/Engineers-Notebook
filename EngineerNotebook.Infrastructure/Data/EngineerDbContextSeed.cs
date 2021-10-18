@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EngineerNotebook.Shared.Extensions;
 using EngineerNotebook.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -21,6 +22,14 @@ namespace EngineerNotebook.Infrastructure.Data
                     await context.Tags.AddRangeAsync(GetPreconfiguredTags());
                     await context.SaveChangesAsync();
                 }
+                
+                // SEED DOCS --> IF NONE EXIST ALREADY
+                if (!await context.Docs.AnyAsync())
+                {
+                    await context.Docs.AddRangeAsync(GetPreconfiguredDocs());
+                    await context.SaveChangesAsync();
+                }
+                
             }
             catch (Exception ex)
             {
@@ -34,6 +43,30 @@ namespace EngineerNotebook.Infrastructure.Data
 
                 throw;
             }
+        }
+
+        static IEnumerable<Documentation> GetPreconfiguredDocs()
+        {
+            const string admin = "admin@ddc.org";
+            
+            return new List<Documentation>()
+            {
+                new()
+                {
+                    Title = "Python",
+                    Description = "Super awesome description here",
+                    Contents = "<h2>Header</h2><p>something cool here</p>".ToBase64(),
+                    CreatedByUserId = admin
+                },
+                
+                new()
+                {
+                    Title = "Sample 2",
+                    Description = "This is description for second item",
+                    Contents = "<h2>Cool</h2><p>I am a banana</p>".ToBase64(),
+                    CreatedByUserId = admin
+                }
+            };
         }
 
         static IEnumerable<Tag> GetPreconfiguredTags()

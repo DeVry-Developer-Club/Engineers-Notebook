@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using EngineerNotebook.Shared.Interfaces;
 
 namespace EngineerNotebook.Shared.Models
@@ -17,5 +18,17 @@ namespace EngineerNotebook.Shared.Models
         public DateTimeOffset EditedAt { get; set; } = DateTimeOffset.UtcNow;
         
         public List<Tag> Tags { get; set; } = new();
+
+        public override string ToString()
+        {
+            return $"Title: {Title}\n" +
+                   $"Description: {Description}\n" +
+                   $"Contents: {Contents}\n" +
+                   $"Created By: {CreatedByUserId}\n" +
+                   $"Edited By: {EditedByUserId}\n" +
+                   $"Created At: {CreatedAt}\n" +
+                   $"Edited At: {EditedAt}\n" +
+                   $"Tags: {string.Join(", ", Tags.Select(x => x.Name))}\n";
+        }
     }
 }

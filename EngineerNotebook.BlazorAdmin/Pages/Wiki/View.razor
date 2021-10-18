@@ -1,0 +1,42 @@
+@page "/Wiki/View/{DocId}"
+@inherits EngineerNotebook.BlazorAdmin.Helpers.BlazorComponent
+@inject IDocService DocService
+@inject NavigationManager NavigationManager
+
+<MudPaper Height="100%" Width="100%">
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        <MudPaper Elevation="2" Width="100%" Square="true" Class="mud-theme-info pa-16 ma-2">
+            <h1>@doc.Title</h1>
+            <p>@doc.Description</p>    
+        </MudPaper>
+        
+        @(new MarkupString(doc.Contents))    
+    </MudContainer>
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public string DocId { get; set; }
+    Documentation doc = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Doc Id: {DocId}");
+        
+        if (string.IsNullOrEmpty(DocId))
+            NavigationManager.NavigateTo("/");
+        
+        var response = await DocService.GetById(int.Parse(DocId));
+        
+        Console.WriteLine(response);
+        if (response == null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+        doc = response;
+        base.OnInitialized();
+    }
+
+}

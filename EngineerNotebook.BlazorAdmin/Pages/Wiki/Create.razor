@@ -1,39 +1,23 @@
 @page "/wiki/create"
 
 @inject ILogger<Create> Logger
-@inject IJSRuntime JsRuntime
 @inject IDocService DocService
+@inject NavigationManager NavigationManager
 @using EngineerNotebook.Shared.Models.Requests
 @inherits Helpers.BlazorComponent
 @namespace EngineerNotebook.BlazorAdmin.Pages.Wiki
 
-<EditForm Model="_item" OnValidSubmit="@CreateClick">
-    <DataAnnotationsValidator/>
-    @if (_item == null)
-    {
-        <Spinner></Spinner>
-    }
-    else
-    {
-        <div class="form-group">
-            <label class="control-label col-md-6">Title</label>
-            <div class="col-md-12">
-                <InputText @bind-Value="_item.Title" class="form-control"></InputText>
-                <ValidationMessage For="() => _item.Title"></ValidationMessage>
-            </div>
-        </div>
-                
-        <div class="form-group">
-            <label class="control-label col-md-6">Description</label>
-            <div class="col-md-12">
-                <InputText @bind-Value="_item.Description" class="form-control"></InputText>
-                <ValidationMessage For="() => _item.Description"></ValidationMessage>
-            </div>
-        </div>
-                
-        <div class="form-group">
-            <label class="control-label col-md-6">Contents</label>
-            
+<h1 class="mt-3" style="text-align: center">
+    New Wiki Document
+</h1>
+
+<MudContainer>
+    <EditForm Model="_item">
+        <DataAnnotationsValidator/>
+        <MudTextField @bind-Value="_item.Title" Label="Title" Required="true" RequiredError="Title is required" Class="mt-2 mb-3"/>
+        <MudTextField @bind-Value="_item.Description" Label="Description" Required="true" RequiredError="Description is required" Class="mb-3"/>
+        
+        <div style="background-color: #F1F1F1; color: black !important">
             <BlazoredTextEditor @ref="ContentEditor">
                 <ToolbarContent>
                     <select class="ql-header">
@@ -65,55 +49,63 @@
                 <EditorContent>
                     @(new MarkupString(_item.Contents))
                 </EditorContent>
-            </BlazoredTextEditor>
+            </BlazoredTextEditor>    
+        </div>
+        
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                       Disabled="@(!IsValid())"
+                       OnClick="OnSubmitClick">Save</MudButton>
+        </MudCardActions>
+    </EditForm>    
+</MudContainer>
 
-            <div class="col-md-12">
-                <ValidationMessage For="() => _item.Contents"></ValidationMessage>
-            </div>
-        </div>                                
-    }
-    
-    <button type="button" class="btn btn-secondary"@onclick="Close">Cancel</button>
-    <button type="submit" class="btn btn-primary">Create</button>
-</EditForm>
-
-@if (_showCreateModal)
-{
-    <div class="modal-backdrop fade show"></div>
-}
 
 @code{
+    bool success;
+    bool _validForm = false;
+    MudForm form;
+    
     BlazoredTextEditor ContentEditor;
-    [Parameter]
-    public EventCallback<string> OnSaveClick { get; set; }
 
-    private bool _showCreateModal = false;
     private CreateDocRequest _item = new();
+
+    bool IsValid()
+    {
+        if (_item == null || string.IsNullOrEmpty(_item.Title) ||
+            string.IsNullOrEmpty(_item.Description))
+        {
+            _validForm = false;
+            return _validForm;
+        }
+
+        _validForm = true;
+
+        return _validForm;
+    }
+    
+    private async Task OnSubmitClick()
+    {
+        _item.Contents = await ContentEditor.GetHTML();
+
+        if (!IsValid())
+            return;
+        
+        await CreateClick();
+    }
     
     private async Task CreateClick()
     {
-        await DocService.Create(_item);
-        await OnSaveClick.InvokeAsync(null);
-        await Close();
+        var response = await DocService.Create(_item);
+
+        if (response == null || response.Id == 0)
+        {
+            Logger.LogError("Something went wrong with creating a new Wiki Page");
+            success = false;
+            return;
+        }
+        success = true;
+        NavigationManager.NavigateTo($"/wiki/view/{response.Id}");    
     }
-
-    public async Task Open()
-    {
-        Logger.LogInformation("Now loading... /Wiki/Create");
-
-        await new Css(JsRuntime).HideBodyOverflow();
-
-        _item = new CreateDocRequest();
-
-        _showCreateModal = true;
-        
-        StateHasChanged();
-    }
-
-    private async Task Close()
-    {
-        await new Css(JsRuntime).ShowBodyOverflow();
-        _showCreateModal = false;
-    }
-
 }

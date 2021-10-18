@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
     public class GetById : BaseAsyncEndpoint
-        .WithRequest<GetByIdDocRequest>
+        .WithRequest<int>
         .WithResponse<GetByIdDocResponse>
     {
         private readonly IAsyncRepository<Documentation> _context;
@@ -19,17 +19,17 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
             _context = context;
         }
 
-        [HttpGet("api/wiki/{DocId}")]
+        [HttpGet("api/wiki/{docId}")]
         [SwaggerOperation(
             Summary = "Get a wiki page by Id",
             Description = "Get a wiki page by Id",
             OperationId = "wiki.GetById",
             Tags = new[]{"WikiEndpoints"})]
-        public override async Task<ActionResult<GetByIdDocResponse>> HandleAsync(GetByIdDocRequest request, CancellationToken cancellationToken = default)
+        public override async Task<ActionResult<GetByIdDocResponse>> HandleAsync(int docId, CancellationToken cancellationToken = default)
         {
-            var response = new GetByIdDocResponse(request.CorrelationId());
+            var response = new GetByIdDocResponse();
 
-            var item = await _context.GetByIdAsync(request.DocId, cancellationToken);
+            var item = await _context.GetByIdAsync(docId, cancellationToken);
             
             if (item is null)
                 return NotFound();

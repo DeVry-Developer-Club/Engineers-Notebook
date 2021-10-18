@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MudBlazor.Services;
 
 namespace EngineerNotebook.BlazorAdmin
 {
@@ -21,10 +22,15 @@ namespace EngineerNotebook.BlazorAdmin
 
             var baseUrlConfig = new BaseUrlConfiguration();
             builder.Configuration.Bind(BaseUrlConfiguration.CONFIG_NAME, baseUrlConfig);
-            builder.Services.AddScoped<BaseUrlConfiguration>(sp => baseUrlConfig);
-            builder.Services.AddScoped(sp => new HttpClient()
-                { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            builder.Services.AddScoped<HttpService>();
+            builder.Services.AddSingleton(sp => baseUrlConfig);
+            
+            // We should try and preserve our established connections as much as possible
+            builder.Services.AddSingleton(sp => new HttpClient()
+            {
+                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+            });
+            builder.Services.AddMudServices();
+            builder.Services.AddSingleton<HttpService>();
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();

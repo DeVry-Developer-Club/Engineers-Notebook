@@ -1,0 +1,35 @@
+@page "/Wiki/List"
+@inherits EngineerNotebook.BlazorAdmin.Helpers.BlazorComponent
+@inject IDocService DocService
+@inject NavigationManager NavigationManager
+
+<MudTable Items="@docs" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Title</MudTh>
+        <MudTh>Description</MudTh>
+        <MudTh>Created By</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd DataLabel="Created By">@context.CreatedByUserId</MudTd>
+        <MudTd>
+            <MudButton OnClick="@(() => NavigationManager.NavigateTo($"/wiki/view/{context.Id}"))">View</MudButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    List<Documentation> docs = new();
+    bool _loading = true;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        docs = await DocService.GetAll();
+        base.OnInitialized();
+        _loading = false;
+    }
+
+
+}
