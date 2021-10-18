@@ -15,7 +15,7 @@ namespace FunctionalTests.PublicApi.WikiEndpoints
     {
         private JsonSerializerOptions _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         
-        private readonly int _testWikiId = 1;
+        private readonly int _testWikiId = 3;
         private readonly string _testWikiTitle = "I am a test";
         private readonly string _testWikiDescription = "I am a description";
         private readonly string _testWikiContent = "I am some awesome content";
