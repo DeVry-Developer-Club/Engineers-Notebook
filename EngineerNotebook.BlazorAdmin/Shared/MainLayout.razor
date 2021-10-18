@@ -1,18 +1,11 @@
-
 @inherits Helpers.BlazorLayoutComponent
-@inject IJSRuntime JsRuntime
-@inject AuthenticationStateProvider AuthStateProvider
-@inject NavigationManager NavManager
 
 <div class="main">
     <AuthorizeView>
-        <div class="sidebar">
+        <div class="sidebar col-2">
             <NavMenu/>
         </div>
     </AuthorizeView>
-    <div class="top-row px-4">
-
-    </div>
 
     <div class="content px-4">
         @Body

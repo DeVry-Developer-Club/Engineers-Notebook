@@ -55,17 +55,6 @@ namespace FunctionalTests.PublicApi.WikiEndpoints
             Assert.Equal(_testWikiContent, model.Doc.Contents);
             Assert.Equal("admin@ddc.org", model.Doc.CreatedByUserId);
         }
-
-        [Fact]
-        public async Task ReturnsUnauthorizedWhenNoId()
-        {
-            var jsonContent = GetValidDocItem();
-            var adminToken = ApiTokenHelper.GetAdminWithoutId();
-            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
-            var response = await Client.PostAsync("api/wiki", jsonContent);
-            
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
         
         private StringContent GetValidDocItem()
         {

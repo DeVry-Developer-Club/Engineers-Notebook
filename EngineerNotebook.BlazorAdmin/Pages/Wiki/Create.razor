@@ -1,3 +1,5 @@
+@page "/wiki/create"
+
 @inject ILogger<Create> Logger
 @inject IJSRuntime JsRuntime
 @inject IDocService DocService
@@ -5,96 +7,75 @@
 @inherits Helpers.BlazorComponent
 @namespace EngineerNotebook.BlazorAdmin.Pages.Wiki
 
-<div class="modal @_modalClass" tabindex="-1" role="dialog" style="display:@_modalDisplay">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <EditForm Model="_item" OnValidSubmit="@CreateClick">
-                <DataAnnotationsValidator/>
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel">Create</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="close" @onclick="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                
-                <div class="modal-body">
-                    @if (_item == null)
-                    {
-                        <Spinner></Spinner>
-                    }
-                    else
-                    {
-                        <div class="container">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="control-label col-md-6">Title</label>
-                                    <div class="col-md-12">
-                                        <InputText @bind-Value="_item.Title" class="form-control"></InputText>
-                                        <ValidationMessage For="() => _item.Title"></ValidationMessage>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="control-label col-md-6">Description</label>
-                                    <div class="col-md-12">
-                                        <InputText @bind-Value="_item.Description" class="form-control"></InputText>
-                                        <ValidationMessage For="() => _item.Description"></ValidationMessage>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="control-label col-md-6">Contents</label>
-                                    
-                                    <BlazoredTextEditor @ref="ContentEditor">
-                                        <ToolbarContent>
-                                            <select class="ql-header">
-                                                <option selected=""></option>
-                                                <option value="1"></option>
-                                                <option value="2"></option>
-                                                <option value="3"></option>
-                                                <option value="4"></option>
-                                                <option value="5"></option>
-                                            </select>
-                                            <span class="ql-formats">
-                                                <button class="ql-bold"></button>
-                                                <button class="ql-italic"></button>
-                                                <button class="ql-underline"></button>
-                                                <button class="ql-strike"></button>
-                                            </span>
-                                            <span class="ql-formats">
-                                                <select class="ql-color"></select>
-                                                <select class="ql-background"></select>
-                                            </span>
-                                            <span class="ql-formats">
-                                                <button class="ql-list" value="ordered"></button>
-                                                <button class="ql-list" value="bullet"></button>
-                                            </span>
-                                            <span class="ql-formats">
-                                                <button class="ql-link"></button>
-                                            </span>
-                                        </ToolbarContent>
-                                        <EditorContent>
-                                            @(new MarkupString(_item.Contents))
-                                        </EditorContent>
-                                    </BlazoredTextEditor>
-
-                                    <div class="col-md-12">
-                                        <ValidationMessage For="() => _item.Contents"></ValidationMessage>
-                                    </div>
-                                </div>                                
-                            </div>
-                        </div>
-                    }
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Close">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create</button>
-                </div>
-            </EditForm>
+<EditForm Model="_item" OnValidSubmit="@CreateClick">
+    <DataAnnotationsValidator/>
+    @if (_item == null)
+    {
+        <Spinner></Spinner>
+    }
+    else
+    {
+        <div class="form-group">
+            <label class="control-label col-md-6">Title</label>
+            <div class="col-md-12">
+                <InputText @bind-Value="_item.Title" class="form-control"></InputText>
+                <ValidationMessage For="() => _item.Title"></ValidationMessage>
+            </div>
         </div>
-    </div>
-</div>
+                
+        <div class="form-group">
+            <label class="control-label col-md-6">Description</label>
+            <div class="col-md-12">
+                <InputText @bind-Value="_item.Description" class="form-control"></InputText>
+                <ValidationMessage For="() => _item.Description"></ValidationMessage>
+            </div>
+        </div>
+                
+        <div class="form-group">
+            <label class="control-label col-md-6">Contents</label>
+            
+            <BlazoredTextEditor @ref="ContentEditor">
+                <ToolbarContent>
+                    <select class="ql-header">
+                        <option selected=""></option>
+                        <option value="1"></option>
+                        <option value="2"></option>
+                        <option value="3"></option>
+                        <option value="4"></option>
+                        <option value="5"></option>
+                    </select>
+                    <span class="ql-formats">
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-underline"></button>
+                        <button class="ql-strike"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <select class="ql-color"></select>
+                        <select class="ql-background"></select>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-list" value="ordered"></button>
+                        <button class="ql-list" value="bullet"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-link"></button>
+                    </span>
+                </ToolbarContent>
+                <EditorContent>
+                    @(new MarkupString(_item.Contents))
+                </EditorContent>
+            </BlazoredTextEditor>
+
+            <div class="col-md-12">
+                <ValidationMessage For="() => _item.Contents"></ValidationMessage>
+            </div>
+        </div>                                
+    }
+    
+    <button type="button" class="btn btn-secondary"@onclick="Close">Cancel</button>
+    <button type="submit" class="btn btn-primary">Create</button>
+</EditForm>
 
 @if (_showCreateModal)
 {
@@ -106,8 +87,6 @@
     [Parameter]
     public EventCallback<string> OnSaveClick { get; set; }
 
-    private string _modalDisplay = "none;";
-    private string _modalClass = "";
     private bool _showCreateModal = false;
     private CreateDocRequest _item = new();
     
@@ -126,8 +105,6 @@
 
         _item = new CreateDocRequest();
 
-        _modalDisplay = "block;";
-        _modalClass = "Show";
         _showCreateModal = true;
         
         StateHasChanged();
@@ -136,8 +113,6 @@
     private async Task Close()
     {
         await new Css(JsRuntime).ShowBodyOverflow();
-        _modalDisplay = "none";
-        _modalClass = "";
         _showCreateModal = false;
     }
 

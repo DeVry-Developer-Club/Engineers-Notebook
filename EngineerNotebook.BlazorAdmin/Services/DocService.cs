@@ -14,8 +14,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
         private readonly ILogger<DocService> _logger;
         private readonly string _apiUrl;
 
-        public DocService(IDocService docService,
-            HttpService httpService,
+        public DocService(HttpService httpService,
             BaseUrlConfiguration config,
             ILogger<DocService> logger)
         {
