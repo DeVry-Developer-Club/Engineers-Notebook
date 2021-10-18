@@ -1,12 +1,11 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EngineerNotebook.Shared.Authorization;
+using Blazored.LocalStorage;
+using EngineerNotebook.Shared.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.Logging;
 
 namespace EngineerNotebook.BlazorAdmin
 {
@@ -16,19 +15,22 @@ namespace EngineerNotebook.BlazorAdmin
         private static readonly TimeSpan UserCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
         private readonly HttpClient _httpClient;
-        private readonly ILogger<CustomAuthStateProvider> _logger;
 
         private DateTimeOffset _userLastCheck = DateTimeOffset.FromUnixTimeSeconds(0);
-        private ClaimsPrincipal _cachedUser = new ClaimsPrincipal(new ClaimsIdentity());
-
+        private ClaimsPrincipal _cachedUser = new (new ClaimsIdentity());
+        private readonly ILocalStorageService _storage;
+        private readonly IAuthService _authService;
+        
         public CustomAuthStateProvider(HttpClient httpClient,
-            ILogger<CustomAuthStateProvider> logger)
+            ILocalStorageService storage,
+            IAuthService authService)
         {
             _httpClient = httpClient;
-            _logger = logger;
+            _storage = storage;
+            _authService = authService;
         }
         
-        public override async Task<AuthenticationState> GetAuthenticationStateAsync() => new AuthenticationState(await GetUser(useCache: true));
+        public override async Task<AuthenticationState> GetAuthenticationStateAsync() => new(await GetUser(useCache: true) ?? new());
 
         private async ValueTask<ClaimsPrincipal> GetUser(bool useCache = false)
         {
@@ -39,39 +41,23 @@ namespace EngineerNotebook.BlazorAdmin
 
             _cachedUser = await FetchUser();
             _userLastCheck = now;
-
             return _cachedUser;
         }
 
         private async Task<ClaimsPrincipal> FetchUser()
         {
-            UserInfo user = null;
+            if (_cachedUser is { Identity: { IsAuthenticated: true } })
+                return _cachedUser;
 
-            try
-            {
-                _logger.LogInformation("Fetching user details from web api.");
-                user = await _httpClient.GetFromJsonAsync<UserInfo>("User");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Fetching user failed.");
-            }
-
-            if (user is not { IsAuthenticated: true })
+            if (!await _storage.ContainKeyAsync(StorageConstants.IDENTITY))
                 return null;
+                        
+            string result = await _storage.GetItemAsStringAsync(StorageConstants.IDENTITY);
+            await _storage.SetItemAsStringAsync(StorageConstants.IDENTITY, result);
 
-            var identity = new ClaimsIdentity(nameof(CustomAuthStateProvider),
-                user.NameClaimType,
-                user.RoleClaimType);
-            
-            if(user.Claims != null)
-                foreach (var claim in user.Claims)
-                    identity.AddClaim(new Claim(claim.Type, claim.Value));
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
-
-            return new ClaimsPrincipal(identity);
-
+            _cachedUser = _authService.ParseToken(result);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result);
+            return _cachedUser;
         }
     }
 }

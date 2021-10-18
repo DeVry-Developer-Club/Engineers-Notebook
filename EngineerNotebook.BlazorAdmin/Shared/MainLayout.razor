@@ -2,38 +2,19 @@
 @inherits Helpers.BlazorLayoutComponent
 @inject IJSRuntime JsRuntime
 @inject AuthenticationStateProvider AuthStateProvider
-
-<AuthorizeView>
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
-</AuthorizeView>
+@inject NavigationManager NavManager
 
 <div class="main">
+    <AuthorizeView>
+        <div class="sidebar">
+            <NavMenu/>
+        </div>
+    </AuthorizeView>
     <div class="top-row px-4">
-        
+
     </div>
-    
+
     <div class="content px-4">
         @Body
     </div>
 </div>
-
-@code{
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-
-            if (authState.User == null)
-            {
-                await new Route(JsRuntime).RouteOutside("/Identity/Account/Login");
-            }
-            
-            CallRequestRefresh();
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-}

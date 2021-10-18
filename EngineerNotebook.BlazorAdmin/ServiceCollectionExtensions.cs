@@ -1,3 +1,5 @@
+using EngineerNotebook.BlazorAdmin.Services;
+using EngineerNotebook.Shared.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EngineerNotebook.BlazorAdmin
@@ -6,7 +8,8 @@ namespace EngineerNotebook.BlazorAdmin
     {
         public static IServiceCollection AddBlazorServices(this IServiceCollection services)
         {
-
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IDocService, DocService>();
             return services;
         }
     }

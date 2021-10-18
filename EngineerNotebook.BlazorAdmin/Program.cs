@@ -1,8 +1,6 @@
 using System;
 using System.Net.Http;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Text;
 using Blazored.LocalStorage;
 using EngineerNotebook.BlazorAdmin.Services;
 using EngineerNotebook.Shared;
@@ -44,8 +42,8 @@ namespace EngineerNotebook.BlazorAdmin
         {
             var sp = services.BuildServiceProvider();
             var localStorageCache = sp.GetRequiredService<ILocalStorageService>();
-            await localStorageCache.RemoveItemAsync("tags");
-            await localStorageCache.RemoveItemAsync("docs");
+            await localStorageCache.RemoveItemAsync(StorageConstants.TAGS);
+            await localStorageCache.RemoveItemAsync(StorageConstants.DOCS);
         }
     }
 }

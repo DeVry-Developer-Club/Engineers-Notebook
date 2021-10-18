@@ -1,0 +1,40 @@
+@page "/Login"
+@using EngineerNotebook.Shared.Models.Requests
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+<h2>Engineers Notebook</h2>
+
+<EditForm Model="model" OnValidSubmit="@Submit">
+    <DataAnnotationsValidator/>
+    
+    <div class="form-group">
+        <label>Email</label>
+        <InputText @bind-Value="model.Username" class="form-control"/>
+        <ValidationMessage For="() => model.Username"/>
+    </div>
+    
+    <div class="form-group">
+        <label>Password</label>
+        <InputText @bind-Value="model.Password" type="password" class="form-control"/>
+        <ValidationMessage For="() => model.Password"/>
+    </div>
+    
+    <button type="submit">Login</button>
+</EditForm>
+
+@code {
+    LoginRequest model = new();
+    
+    public async Task Submit()
+    {
+        var response = await AuthService.Login(model);
+        Console.WriteLine(response.Token);
+        Console.WriteLine(response.Username);
+        Console.WriteLine(response.Result);
+
+        if (response.Result)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}
