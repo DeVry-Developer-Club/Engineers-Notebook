@@ -1,6 +1,6 @@
 # Engineer's Notebook
 
-![Dependency Graph](docs/graph.png "Dependency Graph")
+![Dependency Graph](/docs/graph.png)
 
 The design follows the `Clean Architecture` paradigm. Ultimately, the `Public API` is a microservice which helps us manage and retrieve Wiki-based documentation.
 
