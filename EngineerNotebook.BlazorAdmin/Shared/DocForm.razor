@@ -1,0 +1,129 @@
+@inject ILogger<DocForm> Logger
+@inject IDocService DocService
+@inject NavigationManager NavigationManager
+@using EngineerNotebook.Shared.Models.Requests
+@inherits Helpers.BlazorComponent
+@namespace EngineerNotebook.BlazorAdmin.Shared
+
+<EditForm Model="Doc">
+    <DataAnnotationsValidator/>
+    <MudTextField @bind-Value="Doc.Title" Label="Title" Required="true" RequiredError="Title is required" Class="mt-2 mb-3"/>
+    <MudTextField @bind-Value="Doc.Description" Label="Description" Required="true" RequiredError="Description is required" Class="mb-3"/>
+    
+    <div style="background-color: #F1F1F1; color: black !important">
+        <BlazoredTextEditor @ref="ContentEditor">
+            <ToolbarContent>
+                <select class="ql-header">
+                    <option selected=""></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                </select>
+                <span class="ql-formats">
+                    <button class="ql-bold"></button>
+                    <button class="ql-italic"></button>
+                    <button class="ql-underline"></button>
+                    <button class="ql-strike"></button>
+                </span>
+                <span class="ql-formats">
+                    <select class="ql-color"></select>
+                    <select class="ql-background"></select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-list" value="ordered"></button>
+                    <button class="ql-list" value="bullet"></button>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-link"></button>
+                </span>
+            </ToolbarContent>
+            <EditorContent>
+                @(new MarkupString(Doc.Contents))
+            </EditorContent>
+        </BlazoredTextEditor>    
+    </div>
+    
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Tertiary">Cancel</MudButton>
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                   Disabled="@(!IsValid())"
+                   OnClick="OnSubmitClick">Save</MudButton>
+    </MudCardActions>
+</EditForm>    
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> OnSave { get; set; }
+
+    [Parameter]
+    public Documentation Doc { get; set; } = new();
+
+    [Parameter]
+    public bool IsEdit { get; set; }
+
+    bool success;
+    bool _validForm = false;
+    MudForm form;
+    
+    BlazoredTextEditor ContentEditor;
+
+    bool IsValid()
+    {
+        if (Doc == null || string.IsNullOrEmpty(Doc.Title) ||
+            string.IsNullOrEmpty(Doc.Description))
+        {
+            _validForm = false;
+            return _validForm;
+        }
+
+        _validForm = true;
+
+        return _validForm;
+    }
+    
+    private async Task OnSubmitClick()
+    {
+        Doc.Contents = await ContentEditor.GetHTML();
+
+        if (!IsValid())
+            return;
+        
+        await CreateClick();
+    }
+    
+    private async Task CreateClick()
+    {
+        var response = IsEdit 
+            ? await DocService.Edit(
+                new UpdateDocRequest
+                {
+                    Contents = Doc.Contents,
+                    Description = Doc.Description,
+                    Title = Doc.Title,
+                    Id = Doc.Id,
+                    TagIds = Doc.Tags.Select(x=>x.Id).ToList()
+                }) 
+            : 
+                await DocService.Create(new CreateDocRequest
+                {
+                    Contents = Doc.Contents,
+                    Description = Doc.Description,
+                    Title = Doc.Title,
+                    TagIds = Doc.Tags.Select(x=>x.Id).ToList()
+                });
+
+        if (response == null || response.Id == 0)
+        {
+            Logger.LogError("Something went wrong with creating a new Wiki Page");
+            success = false;
+            return;
+        }
+        
+        success = true;
+
+        await OnSave.InvokeAsync(response.Id.ToString());
+    }
+}

@@ -3,7 +3,12 @@
 @inject IDocService DocService
 @inject NavigationManager NavigationManager
 
-<MudTable Items="@docs" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+<MudTable Items="@docs" 
+          Hover="true" 
+          Breakpoint="Breakpoint.Sm" 
+          Loading="@_loading" 
+          LoadingProgressColor="Color.Info"
+          OnRowClick="@((TableRowClickEventArgs<Documentation> args) => NavigationManager.NavigateTo($"/wiki/view/{args.Item.Id}"))">
     <HeaderContent>
         <MudTh>Title</MudTh>
         <MudTh>Description</MudTh>
@@ -30,6 +35,4 @@
         base.OnInitialized();
         _loading = false;
     }
-
-
 }

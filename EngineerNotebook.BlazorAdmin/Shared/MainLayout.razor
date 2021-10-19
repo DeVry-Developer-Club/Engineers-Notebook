@@ -1,6 +1,7 @@
 @using Blazored.LocalStorage
 @inherits Helpers.BlazorLayoutComponent
 @inject ILocalStorageService StorageProvider
+@inject NavigationManager NavigationManager
 
 <MudThemeProvider Theme="currentTheme"/>
 <MudDialogProvider/>
@@ -8,8 +9,10 @@
 
 <MudLayout>
     <MudAppBar>
-        <MudIconButton Icon="@Icons.Material.Filled.Lightbulb" Class="mr-3" OnClick="@((e)=>DarkMode())">Toggle Theme</MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" @onclick="@(() => NavigationManager.NavigateTo("/"))"></MudIconButton>
         Engineer's Notebook
+        <MudSpacer/>
+        <MudIconButton Icon="@Icons.Material.Filled.Lightbulb" Class="mr-3" OnClick="@((e)=>DarkMode())">Toggle Theme</MudIconButton>
     </MudAppBar>
     <MudDrawer Open="true">
         <NavMenu/>

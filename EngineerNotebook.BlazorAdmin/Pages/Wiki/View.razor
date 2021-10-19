@@ -3,22 +3,48 @@
 @inject IDocService DocService
 @inject NavigationManager NavigationManager
 
-<MudPaper Height="100%" Width="100%">
-    <MudContainer MaxWidth="MaxWidth.Medium">
-        <MudPaper Elevation="2" Width="100%" Square="true" Class="mud-theme-info pa-16 ma-2">
-            <h1>@doc.Title</h1>
-            <p>@doc.Description</p>    
-        </MudPaper>
-        
-        @(new MarkupString(doc.Contents))    
+<MudButton OnClick="@ToggleEdit" Color="@Color">@(!isEditMode ? "Edit" : "View Only")</MudButton>
+
+@if (isEditMode)
+{
+    <MudContainer>
+        <DocForm Doc="doc" IsEdit="true" OnSave="@OnSave"/>
     </MudContainer>
-</MudPaper>
+}
+else
+{
+    <MudPaper Height="100" Width="100%">
+        <MudContainer MaxWidth="MaxWidth.Medium">
+            <MudPaper Elevation="2" Width="100%" Square="true" Class="mud-theme-info pa-16 ma-2 mt-3">
+                <h1>@doc.Title</h1>
+                <p>@doc.Description</p>    
+            </MudPaper>
+            <div style="margin-bottom: 16px; padding-bottom: 16px;">
+                @(new MarkupString(doc.Contents))    
+            </div>
+        </MudContainer>
+    </MudPaper>    
+}
 
 @code {
 
     [Parameter]
     public string DocId { get; set; }
+
+    bool isEditMode = false;
     Documentation doc = new();
+
+    Color Color => isEditMode ? Color.Tertiary : Color.Success;
+    
+    void ToggleEdit()
+    {
+        isEditMode = !isEditMode;
+    }
+    
+    void OnSave(string id)
+    {
+        isEditMode = false;
+    }
     
     protected override async Task OnInitializedAsync()
     {

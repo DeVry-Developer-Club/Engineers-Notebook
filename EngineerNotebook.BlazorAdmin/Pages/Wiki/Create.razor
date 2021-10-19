@@ -3,7 +3,6 @@
 @inject ILogger<Create> Logger
 @inject IDocService DocService
 @inject NavigationManager NavigationManager
-@using EngineerNotebook.Shared.Models.Requests
 @inherits Helpers.BlazorComponent
 @namespace EngineerNotebook.BlazorAdmin.Pages.Wiki
 
@@ -12,100 +11,13 @@
 </h1>
 
 <MudContainer>
-    <EditForm Model="_item">
-        <DataAnnotationsValidator/>
-        <MudTextField @bind-Value="_item.Title" Label="Title" Required="true" RequiredError="Title is required" Class="mt-2 mb-3"/>
-        <MudTextField @bind-Value="_item.Description" Label="Description" Required="true" RequiredError="Description is required" Class="mb-3"/>
-        
-        <div style="background-color: #F1F1F1; color: black !important">
-            <BlazoredTextEditor @ref="ContentEditor">
-                <ToolbarContent>
-                    <select class="ql-header">
-                        <option selected=""></option>
-                        <option value="1"></option>
-                        <option value="2"></option>
-                        <option value="3"></option>
-                        <option value="4"></option>
-                        <option value="5"></option>
-                    </select>
-                    <span class="ql-formats">
-                        <button class="ql-bold"></button>
-                        <button class="ql-italic"></button>
-                        <button class="ql-underline"></button>
-                        <button class="ql-strike"></button>
-                    </span>
-                    <span class="ql-formats">
-                        <select class="ql-color"></select>
-                        <select class="ql-background"></select>
-                    </span>
-                    <span class="ql-formats">
-                        <button class="ql-list" value="ordered"></button>
-                        <button class="ql-list" value="bullet"></button>
-                    </span>
-                    <span class="ql-formats">
-                        <button class="ql-link"></button>
-                    </span>
-                </ToolbarContent>
-                <EditorContent>
-                    @(new MarkupString(_item.Contents))
-                </EditorContent>
-            </BlazoredTextEditor>    
-        </div>
-        
-        <MudCardActions>
-            <MudButton Variant="Variant.Filled" Color="Color.Tertiary">Cancel</MudButton>
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
-                       Disabled="@(!IsValid())"
-                       OnClick="OnSubmitClick">Save</MudButton>
-        </MudCardActions>
-    </EditForm>    
+    <DocForm OnSave="@OnSave"/>
 </MudContainer>
 
-
 @code{
-    bool success;
-    bool _validForm = false;
-    MudForm form;
-    
-    BlazoredTextEditor ContentEditor;
 
-    private CreateDocRequest _item = new();
-
-    bool IsValid()
+    void OnSave(string id)
     {
-        if (_item == null || string.IsNullOrEmpty(_item.Title) ||
-            string.IsNullOrEmpty(_item.Description))
-        {
-            _validForm = false;
-            return _validForm;
-        }
-
-        _validForm = true;
-
-        return _validForm;
-    }
-    
-    private async Task OnSubmitClick()
-    {
-        _item.Contents = await ContentEditor.GetHTML();
-
-        if (!IsValid())
-            return;
-        
-        await CreateClick();
-    }
-    
-    private async Task CreateClick()
-    {
-        var response = await DocService.Create(_item);
-
-        if (response == null || response.Id == 0)
-        {
-            Logger.LogError("Something went wrong with creating a new Wiki Page");
-            success = false;
-            return;
-        }
-        success = true;
-        NavigationManager.NavigateTo($"/wiki/view/{response.Id}");    
+        NavigationManager.NavigateTo($"/wiki/view/{id}");
     }
 }
