@@ -1,7 +1,10 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
 using EngineerNotebook.Core.Interfaces;
+using EngineerNotebook.Core.Specifications;
+using EngineerNotebook.PublicApi.TagEndpoints;
 using EngineerNotebook.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -32,12 +35,12 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
         {
             var response = new GetByIdDocResponse();
 
-            var item = await _context.GetByIdAsync(docId, cancellationToken);
+            var item = await _context.GetByIdAsync(new DocumentationWithTagsSpecification(docId), cancellationToken);
             
             if (item is null)
                 return NotFound();
             
-            response.Doc = new()
+            response.Result = new DocDto()
             {
                 Id = item.Id,
                 Title = item.Title,
@@ -47,7 +50,12 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
                 EditedByUserId = item.EditedByUserId,
                 CreatedAt = item.CreatedAt,
                 EditedAt = item.EditedAt,
-                Tags = item.Tags
+                Tags = item.Tags.Select(y=>new TagDto
+                {
+                    Id = y.Id,
+                    Name = y.Name,
+                    TagType = y.TagType
+                }).ToList() ?? null
             };
 
             return Ok(response);

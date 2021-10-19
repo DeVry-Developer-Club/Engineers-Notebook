@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EngineerNotebook.Shared;
+using EngineerNotebook.Shared.Endpoints;
+using EngineerNotebook.Shared.Endpoints.Tag;
 using EngineerNotebook.Shared.Interfaces;
 using EngineerNotebook.Shared.Models;
-using EngineerNotebook.Shared.Models.Requests;
-using EngineerNotebook.Shared.Models.Responses;
 using Microsoft.Extensions.Logging;
 
 namespace EngineerNotebook.BlazorAdmin.Services
@@ -35,7 +34,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
         /// <returns>Same data with the addition of the primary key generated from the database</returns>
         public async Task<Tag> Create(CreateTagRequest request)
         {
-            return (await _httpService.HttpPost<CreateTagResponse>("tags", request)).Tag;
+            return (await _httpService.HttpPost<TagResponse>("tags", request)).Result;
         }
 
         /// <summary>
@@ -45,7 +44,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
         /// <returns>Updated version of <see cref="Tag"/></returns>
         public async Task<Tag> Edit(UpdateTagRequest request)
         {
-            return (await _httpService.HttpPut<CreateTagResponse>("tags", request)).Tag;
+            return (await _httpService.HttpPut<TagResponse>("tags", request)).Result;
         }
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
         /// <returns>Status of "deleted" if successful</returns>
         public async Task<string> Delete(int id)
         {
-            var response = await _httpService.HttpDelete<DeleteTagResponse>("tags", id);
+            var response = await _httpService.HttpDelete<DeleteResponse>("tags", id);
 
             if (response == null || string.IsNullOrEmpty(response.Status))
             {
@@ -73,15 +72,15 @@ namespace EngineerNotebook.BlazorAdmin.Services
         /// <returns></returns>
         public async Task<Tag> GetById(int id)
         {
-            var item = await _httpService.HttpGet<CreateTagResponse>($"tags/{id}");
+            var item = await _httpService.HttpGet<TagResponse>($"tags/{id}");
 
-            if (item == null || item.Tag == null)
+            if (item == null || item.Result == null)
             {
                 _logger.LogError($"Was unable to retrieve tag with Id: {id}");
                 return new();
             }
 
-            return item.Tag;
+            return item.Result;
         }
 
         /// <summary>

@@ -57,7 +57,7 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
             };
 
             var response = new CreateDocResponse(request.CorrelationId());
-            response.Doc = dto;
+            response.Result = dto;
 
             return response;
         }

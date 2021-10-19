@@ -1,7 +1,6 @@
 @inject ILogger<DocForm> Logger
 @inject IDocService DocService
 @inject NavigationManager NavigationManager
-@using EngineerNotebook.Shared.Models.Requests
 @inherits Helpers.BlazorComponent
 @namespace EngineerNotebook.BlazorAdmin.Shared
 
@@ -45,6 +44,37 @@
         </BlazoredTextEditor>    
     </div>
     
+    @if (Tags != null)
+    {
+        <div class="mt-6">
+                <MudTable Items="Tags"
+                          Hover="true"
+                          Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh>Action</MudTh>
+                    </HeaderContent>
+                        
+                    <RowTemplate Context="tagContext">
+                        <MudTd>@tagContext.Name</MudTd>
+                        <MudTd>@GetDisplayName(tagContext.TagType)</MudTd>
+                        <MudTd>
+                            @if (IsTagAdded(tagContext.Id))
+                            {
+                                <MudButton OnClick="@(()=>RemoveTag(tagContext))" Color="Color.Error">Remove</MudButton>
+                            }
+                            else
+                            {
+                                <MudButton OnClick="@(()=>AddTag(tagContext))" Color="Color.Info">Add</MudButton>
+                            }
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+    }
+    
+    
     <MudCardActions>
         <MudButton Variant="Variant.Filled" Color="Color.Tertiary">Cancel</MudButton>
         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
@@ -62,6 +92,9 @@
     public Documentation Doc { get; set; } = new();
 
     [Parameter]
+    public Tag[] Tags { get; set; }
+
+    [Parameter]
     public bool IsEdit { get; set; }
 
     bool success;
@@ -70,7 +103,36 @@
     
     // This is our WYSIWYG Editor for HTML content
     BlazoredTextEditor ContentEditor;
+    
+    
+    bool IsTagAdded(int id)
+    {
+        return Doc.Tags.Any(x => x.Id == id);
+    }
 
+   void RemoveTag(Tag tag)
+   {
+       Doc.Tags.Remove(Doc.Tags.First(x=>x.Id==tag.Id));
+   }
+
+   void AddTag(Tag tag)
+   {
+       Doc.Tags.Add(tag);
+   }
+           
+    string GetDisplayName(TagType type)
+    {
+        switch (type)
+        {
+            case TagType.Phrase:
+                return "Phrase";
+            case TagType.Prefix:
+                return "Prefix";
+            default:
+                return "Value";
+        }
+    }
+    
     // Validate our form is good to go before allowing save
     bool IsValid()
     {
@@ -108,7 +170,7 @@
                     Description = Doc.Description,
                     Title = Doc.Title,
                     Id = Doc.Id,
-                    TagIds = Doc.Tags.Select(x=>x.Id).ToList()
+                    TagIds = Doc.Tags.Select(x=>x.Id).ToList() ?? null
                 }) 
             : 
                 await DocService.Create(new CreateDocRequest
@@ -116,7 +178,7 @@
                     Contents = Doc.Contents,
                     Description = Doc.Description,
                     Title = Doc.Title,
-                    TagIds = Doc.Tags.Select(x=>x.Id).ToList()
+                    TagIds = Doc.Tags.Select(x=>x.Id).ToList() ?? null
                 });
         
         // Should get a response worth updating the user on

@@ -1,11 +1,12 @@
 using System;
+using EngineerNotebook.Shared.Endpoints;
 
 namespace EngineerNotebook.PublicApi.TagEndpoints
 {
     /// <summary>
-    /// Response for creating a new record of <see cref="Tag"/>
+    /// Response for creating a new record of <see cref="Result"/>
     /// </summary>
-    public class CreateTagResponse : BaseResponse
+    public class CreateTagResponse : BaseResponse, IDtoResponse<TagDto>
     {
         public CreateTagResponse(Guid id) : base(id)
         {
@@ -15,6 +16,6 @@ namespace EngineerNotebook.PublicApi.TagEndpoints
         {
         }
 
-        public TagDto Tag { get; set; }
+        public TagDto Result { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EngineerNotebook.Shared.Models.Requests;
-using EngineerNotebook.Shared.Models.Responses;
+using EngineerNotebook.Shared.Endpoints.Auth;
 
 namespace EngineerNotebook.Shared.Interfaces
 {

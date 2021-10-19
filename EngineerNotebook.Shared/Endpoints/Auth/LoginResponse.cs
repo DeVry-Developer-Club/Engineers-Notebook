@@ -1,4 +1,4 @@
-namespace EngineerNotebook.Shared.Models.Responses
+namespace EngineerNotebook.Shared.Endpoints.Auth
 {
     public class LoginResponse
     {

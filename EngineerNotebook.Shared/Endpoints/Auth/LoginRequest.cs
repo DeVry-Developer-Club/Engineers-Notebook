@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace EngineerNotebook.Shared.Models.Requests
+namespace EngineerNotebook.Shared.Endpoints.Auth
 {
     public class LoginRequest
     {

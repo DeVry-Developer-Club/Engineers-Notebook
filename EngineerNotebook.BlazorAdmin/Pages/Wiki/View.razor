@@ -1,14 +1,15 @@
 @page "/Wiki/View/{DocId}"
 @inherits EngineerNotebook.BlazorAdmin.Helpers.BlazorComponent
 @inject IDocService _docService
+@inject ITagService _tagService
 @inject NavigationManager _navigationManager
 
-<MudButton OnClick="@ToggleEdit" Color="@Color">@(!isEditMode ? "Edit" : "View Only")</MudButton>
+<MudButton OnClick="@ToggleEdit" Color="@Color">@(!_isEditMode ? "Edit" : "View Only")</MudButton>
 
-@if (isEditMode)
+@if (_isEditMode)
 {
     <MudContainer>
-        <DocForm Doc="doc" IsEdit="true" OnSave="@OnSave"/>
+        <DocForm Doc="_doc" IsEdit="true" Tags="_tags" OnSave="@OnSave"/>
     </MudContainer>
 }
 else
@@ -16,11 +17,11 @@ else
     <MudPaper Height="100" Width="100%">
         <MudContainer MaxWidth="MaxWidth.Medium">
             <MudPaper Elevation="2" Width="100%" Square="true" Class="mud-theme-info pa-16 ma-2 mt-3">
-                <h1>@doc.Title</h1>
-                <p>@doc.Description</p>    
+                <h1>@_doc.Title</h1>
+                <p>@_doc.Description</p>    
             </MudPaper>
             <div style="margin-bottom: 16px; padding-bottom: 16px;">
-                @(new MarkupString(doc.Contents))    
+                @(new MarkupString(_doc.Contents))    
             </div>
         </MudContainer>
     </MudPaper>    
@@ -31,19 +32,20 @@ else
     [Parameter]
     public string DocId { get; set; }
 
-    bool isEditMode = false;
-    Documentation doc = new();
+    bool _isEditMode = false;
+    Documentation _doc = new();
+    Tag[] _tags;
 
-    Color Color => isEditMode ? Color.Tertiary : Color.Success;
+    Color Color => _isEditMode ? Color.Tertiary : Color.Success;
     
     void ToggleEdit()
     {
-        isEditMode = !isEditMode;
+        _isEditMode = !_isEditMode;
     }
     
     void OnSave(string id)
     {
-        isEditMode = false;
+        _isEditMode = false;
     }
     
     protected override async Task OnInitializedAsync()
@@ -53,15 +55,19 @@ else
         if (string.IsNullOrEmpty(DocId))
             _navigationManager.NavigateTo("/");
         
-        var response = await _docService.GetById(int.Parse(DocId));
+        var docTask = _docService.GetById(int.Parse(DocId));
+        var tagTask = _tagService.GetAll();
+
+        await Task.WhenAll(docTask, tagTask);
         
-        Console.WriteLine(response);
-        if (response == null)
+        Console.WriteLine(docTask.Result);
+        if (docTask.Result == null)
         {
             _navigationManager.NavigateTo("/");
         }
 
-        doc = response;
+        _doc = docTask.Result;
+        _tags = tagTask.Result?.ToArray();
         base.OnInitialized();
     }
 

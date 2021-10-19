@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EngineerNotebook.Shared.Endpoints.Tag;
 using EngineerNotebook.Shared.Models;
-using EngineerNotebook.Shared.Models.Requests;
 
 namespace EngineerNotebook.Shared.Interfaces
 {

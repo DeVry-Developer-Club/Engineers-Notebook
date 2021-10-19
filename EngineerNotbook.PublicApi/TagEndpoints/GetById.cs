@@ -38,7 +38,7 @@ namespace EngineerNotebook.PublicApi.TagEndpoints
             if (item is null)
                 return NotFound();
 
-            response.Tag = new Tag
+            response.Result = new TagDto
             {
                 Id = item.Id,
                 Name = item.Name,

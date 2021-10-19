@@ -18,5 +18,7 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
         
         [Required]
         public string Contents { get; set; }
+
+        public int[] TagIds { get; set; }
     }
 }

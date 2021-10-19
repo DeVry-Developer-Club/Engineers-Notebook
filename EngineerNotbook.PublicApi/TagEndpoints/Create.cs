@@ -50,7 +50,7 @@ namespace EngineerNotebook.PublicApi.TagEndpoints
             };
 
             var response = new CreateTagResponse(request.CorrelationId());
-            response.Tag = dto;
+            response.Result = dto;
 
             return response;
         }

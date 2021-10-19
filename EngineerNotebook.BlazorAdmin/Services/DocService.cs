@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EngineerNotebook.Shared;
+using EngineerNotebook.Shared.Endpoints;
+using EngineerNotebook.Shared.Endpoints.Doc;
 using EngineerNotebook.Shared.Extensions;
 using EngineerNotebook.Shared.Interfaces;
 using EngineerNotebook.Shared.Models;
-using EngineerNotebook.Shared.Models.Requests;
-using EngineerNotebook.Shared.Models.Responses;
 using Microsoft.Extensions.Logging;
 
 namespace EngineerNotebook.BlazorAdmin.Services
@@ -37,7 +37,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
         public async Task<Documentation> Create(CreateDocRequest request)
         {
             request.Contents = request.Contents.ToBase64(); // This is needed to preserve formatting
-            return (await _httpService.HttpPost<CreateDocResponse>("wiki", request)).Doc;
+            return (await _httpService.HttpPost<DocResponse>("wiki", request)).Result;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
         public async Task<Documentation> Edit(UpdateDocRequest request)
         {
             request.Contents = request.Contents.ToBase64(); // This is needed to preserve formatting
-            return (await _httpService.HttpPut<CreateDocResponse>("wiki", request)).Doc;
+            return (await _httpService.HttpPut<DocResponse>("wiki", request)).Result;
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
         /// <returns>Status code of 'Deleted' if successful</returns>
         public async Task<string> Delete(int id)
         {
-            var response = await _httpService.HttpDelete<DeleteDocResponse>("wiki", id);
+            var response = await _httpService.HttpDelete<DeleteResponse>("wiki", id);
 
             if (response == null || string.IsNullOrEmpty(response.Status))
             {
@@ -76,16 +76,16 @@ namespace EngineerNotebook.BlazorAdmin.Services
         /// <returns>The record, if found. Otherwise null</returns>
         public async Task<Documentation> GetById(int id)
         {
-            var item = await _httpService.HttpGet<CreateDocResponse>($"wiki/{id}");
+            var item = await _httpService.HttpGet<DocResponse>($"wiki/{id}");
             
-            if (item == null || item.Doc == null)
+            if (item == null || item.Result == null)
             {
                 _logger.LogError($"Was unable to retrieve item with ID: {id}");
                 return new();
             }
             
-            item.Doc.Contents = item.Doc.Contents.FromBase64(); // This is needed to make it usable on client side
-            return item.Doc;
+            item.Result.Contents = item.Result.Contents.FromBase64(); // This is needed to make it usable on client side
+            return item.Result;
         }
 
         /// <summary>

@@ -53,7 +53,7 @@ namespace EngineerNotebook.PublicApi.TagEndpoints
                 TagType = existingItem.TagType
             };
 
-            response.Tag = dto;
+            response.Result = dto;
             return response;
         }
     }

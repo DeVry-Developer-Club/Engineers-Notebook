@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using EngineerNotebook.Shared;
 using EngineerNotebook.Shared.Authorization;
+using EngineerNotebook.Shared.Endpoints.Auth;
 using EngineerNotebook.Shared.Interfaces;
-using EngineerNotebook.Shared.Models.Requests;
-using EngineerNotebook.Shared.Models.Responses;
 
 namespace EngineerNotebook.BlazorAdmin.Services
 {

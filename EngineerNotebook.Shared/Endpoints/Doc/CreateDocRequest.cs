@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace EngineerNotebook.Shared.Models.Requests
+namespace EngineerNotebook.Shared.Endpoints.Doc
 {
-    public class CreateDocRequest
+    public class CreateDocRequest : IDto
     {
         [Required] public string Title { get; set; }
         [Required] public string Description { get; set; }

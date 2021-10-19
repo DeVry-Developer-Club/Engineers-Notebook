@@ -49,11 +49,11 @@ namespace FunctionalTests.PublicApi.WikiEndpoints
             var stringResponse = await response.Content.ReadAsStringAsync();
             var model = stringResponse.FromJson<CreateDocResponse>();
 
-            Assert.Equal(_testWikiId, model.Doc.Id);
-            Assert.Equal(_testWikiTitle, model.Doc.Title);
-            Assert.Equal(_testWikiDescription, model.Doc.Description);
-            Assert.Equal(_testWikiContent, model.Doc.Contents);
-            Assert.Equal("admin@ddc.org", model.Doc.CreatedByUserId);
+            Assert.Equal(_testWikiId, model.Result.Id);
+            Assert.Equal(_testWikiTitle, model.Result.Title);
+            Assert.Equal(_testWikiDescription, model.Result.Description);
+            Assert.Equal(_testWikiContent, model.Result.Contents);
+            Assert.Equal("admin@ddc.org", model.Result.CreatedByUserId);
         }
         
         private StringContent GetValidDocItem()

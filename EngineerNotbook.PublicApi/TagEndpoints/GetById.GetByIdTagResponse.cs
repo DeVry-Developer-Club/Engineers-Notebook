@@ -1,12 +1,13 @@
 using System;
+using EngineerNotebook.Shared.Endpoints;
 using EngineerNotebook.Shared.Models;
 
 namespace EngineerNotebook.PublicApi.TagEndpoints
 {
     /// <summary>
-    /// Response for getting a record of <see cref="Tag"/> with a given Tag
+    /// Response for getting a record of <see cref="Result"/> with a given Tag
     /// </summary>
-    public class GetByIdTagResponse : BaseResponse
+    public class GetByIdTagResponse : BaseResponse, IDtoResponse<TagDto>
     {
         public GetByIdTagResponse()
         {
@@ -18,6 +19,6 @@ namespace EngineerNotebook.PublicApi.TagEndpoints
             
         }
         
-        public Tag Tag { get; set; } = new();
+        public TagDto Result { get; set; } = new();
     }
 }
