@@ -1,15 +1,15 @@
 @page "/Wiki/List"
 @inherits EngineerNotebook.BlazorAdmin.Helpers.BlazorComponent
-@inject IDocService DocService
-@inject NavigationManager NavigationManager
-@inject ISnackbar Snackbar
+@inject IDocService _docService
+@inject NavigationManager _navigationManager
+@inject ISnackbar _snackbar
 
 <MudTable Items="@docs" 
           Hover="true" 
           Breakpoint="Breakpoint.Sm" 
           Loading="@_loading" 
           LoadingProgressColor="Color.Info"
-          OnRowClick="@((TableRowClickEventArgs<Documentation> args) => NavigationManager.NavigateTo($"/wiki/view/{args.Item.Id}"))">
+          OnRowClick="@((TableRowClickEventArgs<Documentation> args) => _navigationManager.NavigateTo($"/wiki/view/{args.Item.Id}"))">
     <HeaderContent>
         <MudTh>Title</MudTh>
         <MudTh>Description</MudTh>
@@ -21,7 +21,7 @@
         <MudTd DataLabel="Description">@context.Description</MudTd>
         <MudTd DataLabel="Created By">@context.CreatedByUserId</MudTd>
         <MudTd>
-            <MudButton OnClick="@(() => NavigationManager.NavigateTo($"/wiki/view/{context.Id}"))">View</MudButton>
+            <MudButton OnClick="@(() => _navigationManager.NavigateTo($"/wiki/view/{context.Id}"))">View</MudButton>
             <MudButton OnClick="@(()=>Delete(context.Id))" Color="Color.Error">Delete</MudButton>
         </MudTd>
     </RowTemplate>
@@ -33,19 +33,19 @@
     
     protected override async Task OnInitializedAsync()
     {
-        docs = await DocService.GetAll();
+        docs = await _docService.GetAll();
         base.OnInitialized();
         _loading = false;
     }
 
     async Task Delete(int id)
     {
-        var response = await DocService.Delete(id);
+        var response = await _docService.Delete(id);
         
         if (string.IsNullOrEmpty(response))
         {
             Console.WriteLine($"Was unable to delete Documentation with ID: {id}");
-            Snackbar.Add($"Error", Severity.Error);
+            _snackbar.Add($"Error", Severity.Error);
             return;
         }
 
@@ -54,11 +54,11 @@
         if (doc == null)
         {
             Console.WriteLine($"Could not locate local instance of Documentation with ID: {id}");
-            Snackbar.Add($"Unable to locate local Documentation with ID: {id}", Severity.Warning);
+            _snackbar.Add($"Unable to locate local Documentation with ID: {id}", Severity.Warning);
             return;
         }
 
-        Snackbar.Add($"Deleted '{doc.Title}'", Severity.Success);
+        _snackbar.Add($"Deleted '{doc.Title}'", Severity.Success);
         docs.Remove(doc);
         
         StateHasChanged();

@@ -44,7 +44,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
 
             if (response == null || string.IsNullOrEmpty(response.Status))
             {
-                Console.Error.WriteLine($"Something went wrong trying to delete Doc with Id: {id}");
+                _logger.LogError($"Something went wrong trying to delete Doc with Id: {id}");
                 return null;
             }
 

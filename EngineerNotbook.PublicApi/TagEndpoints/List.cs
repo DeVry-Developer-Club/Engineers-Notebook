@@ -31,10 +31,11 @@ namespace EngineerNotebook.PublicApi.TagEndpoints
             Tags = new[]{"TagEndpoints"})]
         public override async Task<ActionResult<ListTagsResponse>> HandleAsync(CancellationToken cancellationToken = default)
         {
-            var response = new ListTagsResponse();
             var items = await _repository.ListAllAsync(cancellationToken);
-            response.Tags.AddRange(items.Select(_mapper.Map<TagDto>));
-            return Ok(response);
+
+            if (items is null)
+                return NotFound();
+            return Ok(items);
         }
     }
 }

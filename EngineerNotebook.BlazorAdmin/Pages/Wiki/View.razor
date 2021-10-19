@@ -1,7 +1,7 @@
 @page "/Wiki/View/{DocId}"
 @inherits EngineerNotebook.BlazorAdmin.Helpers.BlazorComponent
-@inject IDocService DocService
-@inject NavigationManager NavigationManager
+@inject IDocService _docService
+@inject NavigationManager _navigationManager
 
 <MudButton OnClick="@ToggleEdit" Color="@Color">@(!isEditMode ? "Edit" : "View Only")</MudButton>
 
@@ -51,14 +51,14 @@ else
         Console.WriteLine($"Doc Id: {DocId}");
         
         if (string.IsNullOrEmpty(DocId))
-            NavigationManager.NavigateTo("/");
+            _navigationManager.NavigateTo("/");
         
-        var response = await DocService.GetById(int.Parse(DocId));
+        var response = await _docService.GetById(int.Parse(DocId));
         
         Console.WriteLine(response);
         if (response == null)
         {
-            NavigationManager.NavigateTo("/");
+            _navigationManager.NavigateTo("/");
         }
 
         doc = response;

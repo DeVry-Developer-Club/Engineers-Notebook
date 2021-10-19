@@ -1,7 +1,7 @@
 @page "/Login"
 @using EngineerNotebook.Shared.Models.Requests
-@inject IAuthService AuthService
-@inject NavigationManager NavigationManager
+@inject IAuthService _authService
+@inject NavigationManager _navigationManager
 <h2>Engineers Notebook</h2>
 
 <EditForm Model="model" OnValidSubmit="@Submit">
@@ -27,14 +27,14 @@
     
     public async Task Submit()
     {
-        var response = await AuthService.Login(model);
+        var response = await _authService.Login(model);
         Console.WriteLine(response.Token);
         Console.WriteLine(response.Username);
         Console.WriteLine(response.Result);
 
         if (response.Result)
         {
-            NavigationManager.NavigateTo("/");
+            _navigationManager.NavigateTo("/");
         }
     }
 }

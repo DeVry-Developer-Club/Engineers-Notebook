@@ -10,6 +10,7 @@ namespace EngineerNotebook.BlazorAdmin
         {
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IDocService, DocService>();
+            services.AddScoped<ITagService, TagService>();
             return services;
         }
     }

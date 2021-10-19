@@ -1,7 +1,7 @@
 @using Blazored.LocalStorage
 @inherits Helpers.BlazorLayoutComponent
-@inject ILocalStorageService StorageProvider
-@inject NavigationManager NavigationManager
+@inject ILocalStorageService _storageProvider
+@inject NavigationManager _navigationManager
 
 <MudThemeProvider Theme="currentTheme"/>
 <MudDialogProvider/>
@@ -9,7 +9,7 @@
 
 <MudLayout>
     <MudAppBar>
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" @onclick="@(() => NavigationManager.NavigateTo("/"))"></MudIconButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" @onclick="@(() => _navigationManager.NavigateTo("/"))"></MudIconButton>
         Engineer's Notebook
         <MudSpacer/>
         <MudIconButton Icon="@Icons.Material.Filled.Lightbulb" Class="mr-3" OnClick="@((e)=>DarkMode())">Toggle Theme</MudIconButton>
@@ -26,9 +26,9 @@
 @code{
     protected override async Task OnInitializedAsync()
     {
-        if (await StorageProvider.ContainKeyAsync("theme"))
+        if (await _storageProvider.ContainKeyAsync("theme"))
         {
-            string coloration = await StorageProvider.GetItemAsStringAsync("theme");
+            string coloration = await _storageProvider.GetItemAsStringAsync("theme");
 
             switch (coloration)
             {
@@ -43,7 +43,7 @@
         else
         {
             currentTheme = darkTheme;
-            await StorageProvider.SetItemAsStringAsync("theme", "dark");
+            await _storageProvider.SetItemAsStringAsync("theme", "dark");
         }
     }
 
@@ -57,12 +57,12 @@
         if (currentTheme == defaultTheme)
         {
             currentTheme = darkTheme;
-            await StorageProvider.SetItemAsStringAsync("theme", "dark");
+            await _storageProvider.SetItemAsStringAsync("theme", "dark");
         }
         else
         {
             currentTheme = defaultTheme;
-            await StorageProvider.SetItemAsStringAsync("theme", "light");
+            await _storageProvider.SetItemAsStringAsync("theme", "light");
         }
     }
     

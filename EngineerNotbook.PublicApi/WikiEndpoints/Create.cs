@@ -22,12 +22,10 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
         .WithResponse<CreateDocResponse>
     {
         private readonly IAsyncRepository<Documentation> _docRepo;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public Create(IAsyncRepository<Documentation> docRepo, UserManager<ApplicationUser> userManager)
+        public Create(IAsyncRepository<Documentation> docRepo)
         {
             _docRepo = docRepo;
-            _userManager = userManager;
         }
 
         [HttpPost("api/wiki")]

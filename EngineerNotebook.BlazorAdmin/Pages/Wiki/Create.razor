@@ -1,8 +1,8 @@
 @page "/wiki/create"
 
-@inject ILogger<Create> Logger
-@inject IDocService DocService
-@inject NavigationManager NavigationManager
+@inject ILogger<Create> _logger
+@inject IDocService _docService
+@inject NavigationManager _navigationManager
 @inherits Helpers.BlazorComponent
 @namespace EngineerNotebook.BlazorAdmin.Pages.Wiki
 
@@ -18,6 +18,6 @@
 
     void OnSave(string id)
     {
-        NavigationManager.NavigateTo($"/wiki/view/{id}");
+        _navigationManager.NavigateTo($"/wiki/view/{id}");
     }
 }
