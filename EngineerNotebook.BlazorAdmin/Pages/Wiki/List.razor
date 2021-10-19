@@ -2,6 +2,7 @@
 @inherits EngineerNotebook.BlazorAdmin.Helpers.BlazorComponent
 @inject IDocService DocService
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
 <MudTable Items="@docs" 
           Hover="true" 
@@ -21,6 +22,7 @@
         <MudTd DataLabel="Created By">@context.CreatedByUserId</MudTd>
         <MudTd>
             <MudButton OnClick="@(() => NavigationManager.NavigateTo($"/wiki/view/{context.Id}"))">View</MudButton>
+            <MudButton OnClick="@(()=>Delete(context.Id))" Color="Color.Error">Delete</MudButton>
         </MudTd>
     </RowTemplate>
 </MudTable>
@@ -34,5 +36,31 @@
         docs = await DocService.GetAll();
         base.OnInitialized();
         _loading = false;
+    }
+
+    async Task Delete(int id)
+    {
+        var response = await DocService.Delete(id);
+        
+        if (string.IsNullOrEmpty(response))
+        {
+            Console.WriteLine($"Was unable to delete Documentation with ID: {id}");
+            Snackbar.Add($"Error", Severity.Error);
+            return;
+        }
+
+        var doc = docs.FirstOrDefault(x => x.Id == id);
+        
+        if (doc == null)
+        {
+            Console.WriteLine($"Could not locate local instance of Documentation with ID: {id}");
+            Snackbar.Add($"Unable to locate local Documentation with ID: {id}", Severity.Warning);
+            return;
+        }
+
+        Snackbar.Add($"Deleted '{doc.Title}'", Severity.Success);
+        docs.Remove(doc);
+        
+        StateHasChanged();
     }
 }

@@ -40,7 +40,15 @@ namespace EngineerNotebook.BlazorAdmin.Services
 
         public async Task<string> Delete(int id)
         {
-            return (await _httpService.HttpDelete<DeleteDocResponse>("wiki", id)).Status;
+            var response = await _httpService.HttpDelete<DeleteDocResponse>("wiki", id);
+
+            if (response == null || string.IsNullOrEmpty(response.Status))
+            {
+                Console.Error.WriteLine($"Something went wrong trying to delete Doc with Id: {id}");
+                return null;
+            }
+
+            return response.Status;
         }
 
         public async Task<Documentation> GetById(int id)
