@@ -2,6 +2,9 @@ using System.Threading.Tasks;
 
 namespace EngineerNotebook.Core.Interfaces
 {
+    /// <summary>
+    /// Service which converts a Razor or CSHTML Page into an HTML string
+    /// </summary>
     public interface IRazorToString
     {
         /// <summary>

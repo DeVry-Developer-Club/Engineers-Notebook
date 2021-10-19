@@ -11,6 +11,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
+    /// <summary>
+    /// Endpoint for deleting a <see cref="Documentation"/> by ID
+    /// </summary>
     [Authorize(Roles = Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class Delete : BaseAsyncEndpoint
         .WithRequest<int>

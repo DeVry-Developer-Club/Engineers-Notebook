@@ -12,6 +12,9 @@ using EngineerNotebook.Shared.Models.Responses;
 
 namespace EngineerNotebook.BlazorAdmin.Services
 {
+    /// <summary>
+    /// Provides Authentication methods for our local user
+    /// </summary>
     public class AuthService : IAuthService
     {
         private readonly HttpService _httpService;
@@ -25,6 +28,11 @@ namespace EngineerNotebook.BlazorAdmin.Services
             _apiUrl = config.ApiBase;
         }
 
+        /// <summary>
+        /// Attempt to login with the given <paramref name="request"/>
+        /// </summary>
+        /// <param name="request">Contains username / password</param>
+        /// <returns>Login Response</returns>
         public async Task<LoginResponse> Login(LoginRequest request)
         {
             var response = await _httpService.HttpPost<LoginResponse>("authenticate", request);
@@ -36,10 +44,16 @@ namespace EngineerNotebook.BlazorAdmin.Services
             return response;
         }
 
+        /// <summary>
+        /// Used to parse local storage token so we can determine who our user is
+        /// </summary>
+        /// <param name="tokenText">Token</param>
+        /// <returns>User identity based on <paramref name="tokenText"/></returns>
         public ClaimsPrincipal ParseToken(string tokenText)
         {
             JwtSecurityToken token = new JwtSecurityToken(tokenText);
-
+            
+            // Create our user information
             var user = new UserInfo
             {
                 Token = tokenText,
@@ -53,6 +67,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
                 user.NameClaimType,
                 user.RoleClaimType);
 
+            // Our application requires the user to have administrative privileges (at least for now)
             bool isAdmin = false;
             foreach (var claim in user.Claims)
             {
@@ -63,6 +78,7 @@ namespace EngineerNotebook.BlazorAdmin.Services
                 userIdentity.AddClaim(new Claim(claim.Type, claim.Value));
             }
 
+            // If they're not admin... error out
             if (!isAdmin)
             {
                 Console.Error.WriteLine("User is not an administrator");

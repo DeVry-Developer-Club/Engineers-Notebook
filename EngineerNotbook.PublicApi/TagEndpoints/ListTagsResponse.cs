@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 namespace EngineerNotebook.PublicApi.TagEndpoints
 {
+    /// <summary>
+    /// Response for retrieving all records of <see cref="Tags"/>
+    /// </summary>
     public class ListTagsResponse : BaseResponse
     {
         public ListTagsResponse(Guid correlationId) : base(correlationId)

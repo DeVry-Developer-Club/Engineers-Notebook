@@ -11,6 +11,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.TagEndpoints
 {
+    /// <summary>
+    /// Endpoint for deleting a record of <see cref="Tag"/> by ID
+    /// </summary>
     [Authorize(Roles = Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class Delete : BaseAsyncEndpoint
         .WithRequest<int>

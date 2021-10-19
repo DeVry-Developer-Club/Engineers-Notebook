@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
@@ -16,6 +14,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
+    /// <summary>
+    /// Endpoint which allows for updating a record of <see cref="Documentation"/>
+    /// </summary>
     [Authorize(Roles = Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class Update : BaseAsyncEndpoint
         .WithRequest<UpdateDocRequest>

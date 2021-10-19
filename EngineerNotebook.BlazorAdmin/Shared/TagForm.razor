@@ -50,21 +50,25 @@
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; }
 
+    // This needs to validate our form
     bool IsValid()
     {
         return !string.IsNullOrEmpty(Tag.Name);
     }
     
+    // Exit dialog
     private void Cancel()
     {
         MudDialog.Cancel();
     }
     
+    // Attempt to save current content
     private async Task OnSubmitClick()
     {
         if (!IsValid())
             return;
-
+        
+        // Based on mode - invoke the applicable API endpoint
         var response = IsEdit
             ? await _tagService.Edit(new UpdateTagRequest
             {
@@ -77,7 +81,8 @@
                 Name = Tag.Name,
                 TagType = Tag.TagType
             });
-
+        
+        // Should get a response worth updating the user on
         if (response == null || response.Id == 0)
         {
             _logger.LogError($"Something went wrong with {(IsEdit ? "editing" : "creating")} Tag");

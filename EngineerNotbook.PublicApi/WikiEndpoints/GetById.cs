@@ -8,6 +8,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
+    /// <summary>
+    /// Endpoint for retrieving a <see cref="Documentation"/> by ID
+    /// </summary>
     public class GetById : BaseAsyncEndpoint
         .WithRequest<int>
         .WithResponse<GetByIdDocResponse>

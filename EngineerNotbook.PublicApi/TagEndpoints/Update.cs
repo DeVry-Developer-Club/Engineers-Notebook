@@ -11,6 +11,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.TagEndpoints
 {
+    /// <summary>
+    /// Endpoint for updating a <see cref="Tag"/>
+    /// </summary>
     [Authorize(Roles = Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class Update : BaseAsyncEndpoint
         .WithRequest<UpdateTagRequest>

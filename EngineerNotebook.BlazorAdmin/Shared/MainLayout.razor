@@ -24,11 +24,14 @@
 </MudLayout>
 
 @code{
+    
     protected override async Task OnInitializedAsync()
     {
-        if (await _storageProvider.ContainKeyAsync("theme"))
+        // As a user, we want to have the site remember our theme selection
+        // To do so means utilizing our StorageProvider
+        if (await _storageProvider.ContainKeyAsync(StorageConstants.THEME))
         {
-            string coloration = await _storageProvider.GetItemAsStringAsync("theme");
+            string coloration = await _storageProvider.GetItemAsStringAsync(StorageConstants.THEME);
 
             switch (coloration)
             {
@@ -43,7 +46,7 @@
         else
         {
             currentTheme = darkTheme;
-            await _storageProvider.SetItemAsStringAsync("theme", "dark");
+            await _storageProvider.SetItemAsStringAsync(StorageConstants.THEME, "dark");
         }
     }
 
@@ -57,12 +60,12 @@
         if (currentTheme == defaultTheme)
         {
             currentTheme = darkTheme;
-            await _storageProvider.SetItemAsStringAsync("theme", "dark");
+            await _storageProvider.SetItemAsStringAsync(StorageConstants.THEME, "dark");
         }
         else
         {
             currentTheme = defaultTheme;
-            await _storageProvider.SetItemAsStringAsync("theme", "light");
+            await _storageProvider.SetItemAsStringAsync(StorageConstants.THEME, "light");
         }
     }
     

@@ -68,8 +68,10 @@
     bool _validForm = false;
     MudForm form;
     
+    // This is our WYSIWYG Editor for HTML content
     BlazoredTextEditor ContentEditor;
 
+    // Validate our form is good to go before allowing save
     bool IsValid()
     {
         if (Doc == null || string.IsNullOrEmpty(Doc.Title) ||
@@ -86,6 +88,7 @@
     
     private async Task OnSubmitClick()
     {
+        // Populate our Contents property with the HTML content from editor
         Doc.Contents = await ContentEditor.GetHTML();
 
         if (!IsValid())
@@ -96,6 +99,7 @@
     
     private async Task CreateClick()
     {
+        // Based on mode --> invoke the applicable endpoint
         var response = IsEdit 
             ? await DocService.Edit(
                 new UpdateDocRequest
@@ -114,7 +118,8 @@
                     Title = Doc.Title,
                     TagIds = Doc.Tags.Select(x=>x.Id).ToList()
                 });
-
+        
+        // Should get a response worth updating the user on
         if (response == null || response.Id == 0)
         {
             Logger.LogError("Something went wrong with creating a new Wiki Page");
@@ -123,7 +128,8 @@
         }
         
         success = true;
-
+        
+        // Tap into the custom / passed down save event
         await OnSave.InvokeAsync(response.Id.ToString());
     }
 }

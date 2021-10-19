@@ -5,6 +5,9 @@ using EngineerNotebook.Shared.Models;
 
 namespace EngineerNotebook.Core.Specifications
 {
+    /// <summary>
+    /// Query for retrieving all records of <see cref="Documentation"/> that match the provided criteria
+    /// </summary>
     public sealed class DocumentationWithFiltersSpecification : Specification<Documentation>
     {
         private const float NeedAtLeast = 0.65f; // Need at least X of the expected tags

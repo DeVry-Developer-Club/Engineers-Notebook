@@ -1,21 +1,19 @@
-using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
-using Ardalis.GuardClauses;
 using EngineerNotebook.Core.Interfaces;
-using EngineerNotebook.Infrastructure.Identity;
 using EngineerNotebook.Shared.Authorization;
 using EngineerNotebook.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
+    /// <summary>
+    /// Endpoint for creating a new record of <see cref="Documentation"/>
+    /// </summary>
     [Authorize(Roles = Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class Create : BaseAsyncEndpoint
         .WithRequest<CreateDocRequest>

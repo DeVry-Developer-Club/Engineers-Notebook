@@ -1,8 +1,11 @@
 using System;
 using EngineerNotebook.Shared.Models;
 
-namespace EngineerNotebook.PublicApi.WikiEndpoints
+namespace EngineerNotebook.PublicApi.TagEndpoints
 {
+    /// <summary>
+    /// Response for getting a record of <see cref="Tag"/> with a given Tag
+    /// </summary>
     public class GetByIdTagResponse : BaseResponse
     {
         public GetByIdTagResponse()

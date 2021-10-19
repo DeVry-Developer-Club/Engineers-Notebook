@@ -9,6 +9,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
+    /// <summary>
+    /// Endpoint for retrieving all records of <see cref="Documentation"/>
+    /// </summary>
     public class List : BaseAsyncEndpoint
         .WithoutRequest
         .WithResponse<GetByIdDocResponse>

@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using EngineerNotebook.PublicApi.TagEndpoints;
+using EngineerNotebook.Shared.Models;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
+    /// <summary>
+    /// Data Object which represents <see cref="Documentation"/>
+    /// </summary>
     public class DocDto
     {
         public int Id { get; set; }

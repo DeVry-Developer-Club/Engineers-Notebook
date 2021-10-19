@@ -6,6 +6,9 @@ using EngineerNotebook.Shared;
 
 namespace EngineerNotebook.BlazorAdmin.Services
 {
+    /// <summary>
+    /// Basic HTTP Service providing our foundational CRUD operations
+    /// </summary>
     public class HttpService
     {
         private readonly HttpClient _httpClient;

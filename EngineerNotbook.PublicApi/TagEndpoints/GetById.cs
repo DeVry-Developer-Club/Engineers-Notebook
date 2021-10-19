@@ -2,13 +2,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
 using EngineerNotebook.Core.Interfaces;
-using EngineerNotebook.PublicApi.WikiEndpoints;
 using EngineerNotebook.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.TagEndpoints
 {
+    /// <summary>
+    /// Endpoint for retrieving a <see cref="Tag"/> by ID
+    /// </summary>
     public class GetById : BaseAsyncEndpoint
         .WithRequest<int>
         .WithResponse<GetByIdTagResponse>

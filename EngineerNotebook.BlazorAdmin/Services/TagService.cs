@@ -10,6 +10,9 @@ using Microsoft.Extensions.Logging;
 
 namespace EngineerNotebook.BlazorAdmin.Services
 {
+    /// <summary>
+    /// Basic service providing CRUD operations for <see cref="Tag"/> endpoints
+    /// </summary>
     public class TagService : ITagService
     {
         private readonly HttpService _httpService;
@@ -25,16 +28,31 @@ namespace EngineerNotebook.BlazorAdmin.Services
             _apiUrl = config.ApiBase;
         }
 
+        /// <summary>
+        /// Attempts to create a new record of <see cref="Tag"/> based on <paramref name="request"/>
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>Same data with the addition of the primary key generated from the database</returns>
         public async Task<Tag> Create(CreateTagRequest request)
         {
             return (await _httpService.HttpPost<CreateTagResponse>("tags", request)).Tag;
         }
 
+        /// <summary>
+        /// Attempts to update/edit an existing record of <see cref="Tag"/>
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>Updated version of <see cref="Tag"/></returns>
         public async Task<Tag> Edit(UpdateTagRequest request)
         {
             return (await _httpService.HttpPut<CreateTagResponse>("tags", request)).Tag;
         }
 
+        /// <summary>
+        /// Attempts to delete an existing record of <see cref="Tag"/> with a given <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Status of "deleted" if successful</returns>
         public async Task<string> Delete(int id)
         {
             var response = await _httpService.HttpDelete<DeleteTagResponse>("tags", id);
@@ -48,6 +66,11 @@ namespace EngineerNotebook.BlazorAdmin.Services
             return response.Status;
         }
 
+        /// <summary>
+        /// Attempts to retrieve an existing record of <see cref="Tag"/> with the given <paramref name="id"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<Tag> GetById(int id)
         {
             var item = await _httpService.HttpGet<CreateTagResponse>($"tags/{id}");
@@ -61,6 +84,10 @@ namespace EngineerNotebook.BlazorAdmin.Services
             return item.Tag;
         }
 
+        /// <summary>
+        /// Attempts to retrieve all records of <see cref="Tag"/> from the database
+        /// </summary>
+        /// <returns>List of <see cref="Tag"/></returns>
         public async Task<List<Tag>> GetAll()
         {
             var items = await _httpService.HttpGet<List<Tag>>("tags");
