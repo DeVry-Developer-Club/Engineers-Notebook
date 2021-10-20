@@ -16,6 +16,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalTests", "Function
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.BlazorAdmin", "EngineerNotebook.BlazorAdmin\EngineerNotebook.BlazorAdmin.csproj", "{71FEA81B-C061-48AA-A799-D6DA1300FE1C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{FAF08545-D38F-4CEC-AE28-7380C10703F3}"
+ProjectSection(SolutionItems) = preProject
+	build_services.sh = build_services.sh
+	docker-compose.yml = docker-compose.yml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

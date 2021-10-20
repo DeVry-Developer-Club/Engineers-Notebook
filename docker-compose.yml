@@ -1,0 +1,46 @@
+version: "3.8"
+  networks:
+      engineers-notebook:
+          name: engineers-notebook
+  
+  services:
+    engineer-db:
+      container_name: engineer-db
+      image: mysql
+      restart: always
+      volumes:
+        - $(PWD)/data:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: devry123
+        
+    devry-identity:
+      container_name: devry-identity
+      image: mysql
+      restart: always
+      volumes:
+        - $(PWD)/data:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: devry123
+
+    public-api:
+      container_name: public-api
+      image: engineers-notebook-public-api:$TAG
+      restart: always
+      networks:
+        - "engineers-notebook"
+      depends_on:
+        - "db"
+      ports:
+        - "5099:5099"
+
+    blazor-admin:
+      container_name: blazor-admin
+      image: engineers-notebook-blazor-admin:$TAG
+      restart: always
+      networks:
+        - "engineers-notebook"
+      depends_on:
+        - "db"
+        - "public-api"
+      ports:
+        - "5001:5001"

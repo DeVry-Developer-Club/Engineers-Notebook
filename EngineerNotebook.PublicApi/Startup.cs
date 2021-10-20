@@ -45,6 +45,12 @@ namespace EngineerNotebook.PublicApi
             ConfigureMySqlDatabase(services);
             ConfigureServices(services);
         }
+            
+        public void ConfigureProductionServices(IServiceCollection services)
+        {
+            ConfigureMySqlDatabase(services);
+            ConfigureServices(services);
+        }
         
         private void ConfigureMySqlDatabase(IServiceCollection services)
         {
