@@ -33,7 +33,6 @@ services:
       - "engineers-notebook"
     depends_on:
       - "engineer-db"
-      - "identity-db"
       - "devry-identity"
     ports:
       - "5099:5099"
