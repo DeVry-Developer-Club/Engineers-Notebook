@@ -2,6 +2,9 @@ using System.Threading.Tasks;
 
 namespace EngineerNotebook.Core.Interfaces
 {
+    /// <summary>
+    /// Service which converts HTML into a PDF
+    /// </summary>
     public interface IHtmlToPdfConverter
     {
         /// <summary>

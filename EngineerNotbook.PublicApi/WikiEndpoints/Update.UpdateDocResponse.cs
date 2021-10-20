@@ -1,8 +1,13 @@
 using System;
+using EngineerNotebook.Shared.Endpoints;
+using EngineerNotebook.Shared.Models;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
-    public class UpdateDocResponse : BaseResponse
+    /// <summary>
+    /// Response for updating <see cref="Documentation"/>
+    /// </summary>
+    public class UpdateDocResponse : BaseResponse, IDtoResponse<DocDto>
     {
         public UpdateDocResponse(Guid id) : base(id)
         {
@@ -14,6 +19,6 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
             
         }
 
-        public DocDto Doc { get; set; }
+        public DocDto Result { get; set; }
     }
 }

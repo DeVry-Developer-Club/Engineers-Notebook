@@ -34,11 +34,8 @@ namespace EngineerNotebook.PublicApi.GuideEndpoints
             Tags = new[]{"GuideEndpoints"})]
         public override async Task<ActionResult> HandleAsync([FromBody] GetByTagsRequest request, CancellationToken cancellationToken = default)
         {
-            DocumentationWithFiltersSpecification specification =
-                request.TagNames != null
-                    ? new DocumentationWithFiltersSpecification(request.TagNames.ToArray())
-                    : new DocumentationWithFiltersSpecification(request.TagIds.ToArray());
-
+            DocumentationWithFiltersSpecification specification = new DocumentationWithFiltersSpecification(request.TagIds.ToArray());
+            
             // Retrieve all records which have the specified tags
             var results = await _context.ListAsync(specification, cancellationToken);
 

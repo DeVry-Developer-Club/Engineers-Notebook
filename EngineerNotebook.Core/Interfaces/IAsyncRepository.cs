@@ -7,9 +7,14 @@ using EngineerNotebook.Shared.Interfaces;
 
 namespace EngineerNotebook.Core.Interfaces
 {
+    /// <summary>
+    /// Abstraction layer for how we will retrieve information we'll use throughout our application
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IAsyncRepository<T> where T: BaseEntity, IAggregateRoot
     {
         Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<T> GetByIdAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
         Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default);
         Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
         Task<T> AddAsync(T entity, CancellationToken cancellationToken = default);

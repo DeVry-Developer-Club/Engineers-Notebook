@@ -16,8 +16,6 @@ namespace FunctionalTests.PublicApi
         
         public static string GetAdminUserToken() => CreateToken(id, userName, roles);
 
-        public static string GetAdminWithoutId() => CreateToken(string.Empty, userName, roles);
-
         private static string CreateToken(string id, string userName, string[] roles)
         {
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, userName) };
