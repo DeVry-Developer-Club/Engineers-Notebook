@@ -9,8 +9,12 @@ The `Blazor Admin` project is a front-end tailored for administrative duties of 
 `Skynet` project will use the `Public API` to help automate the answering of questions users have on our Discord server.
 
 ## Screenshots
-![docs view](/docs/docs_view.PNG)
-![view only](/docs/view_only.PNG)
-![edit view](/docs/edit_view.PNG)
-![new doc](/docs/new_doc.PNG)
-![tags](/docs/tags.PNG)
+![docs view](/docs/docs_view.png)
+
+![view only](/docs/view_only.png)
+
+![edit view](/docs/edit_view.png)
+
+![new doc](/docs/new_doc.png)
+
+![tags](/docs/tags.png)
