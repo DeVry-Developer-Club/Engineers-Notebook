@@ -26,6 +26,12 @@ namespace EngineerNotebook.Infrastructure.Data
             return await DbContext.Set<T>().FindAsync(keyValues, cancellationToken);
         }
 
+        public virtual async Task<T> GetByIdAsync(ISpecification<T> spec, CancellationToken cancellationToken = default)
+        {
+            var query = ApplySpecification(spec);
+            return await query.FirstOrDefaultAsync(cancellationToken);
+        }
+
         public async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default)
         {
             return await DbContext.Set<T>().ToListAsync(cancellationToken);

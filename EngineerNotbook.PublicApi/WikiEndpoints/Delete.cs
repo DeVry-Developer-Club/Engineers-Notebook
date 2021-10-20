@@ -11,9 +11,12 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
+    /// <summary>
+    /// Endpoint for deleting a <see cref="Documentation"/> by ID
+    /// </summary>
     [Authorize(Roles = Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class Delete : BaseAsyncEndpoint
-        .WithRequest<DeleteDocRequest>
+        .WithRequest<int>
         .WithResponse<DeleteDocResponse>
     {
         private readonly IAsyncRepository<Documentation> _context;
@@ -23,17 +26,17 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
             _context = context;
         }
 
-        [HttpDelete("api/wiki/{DocId}")]
+        [HttpDelete("api/wiki/{docId}")]
         [SwaggerOperation(
             Summary = "Deletes a Documentation Record",
             Description = "Deletes a Documentation Record",
             OperationId = "wiki.Delete",
             Tags = new[]{"WikiEndpoints"})]
-        public override async Task<ActionResult<DeleteDocResponse>> HandleAsync(DeleteDocRequest request, CancellationToken cancellationToken = default)
+        public override async Task<ActionResult<DeleteDocResponse>> HandleAsync(int docId, CancellationToken cancellationToken = default)
         {
-            var response = new DeleteDocResponse(request.CorrelationId());
+            var response = new DeleteDocResponse();
 
-            var itemToDelete = await _context.GetByIdAsync(request.DocId, cancellationToken);
+            var itemToDelete = await _context.GetByIdAsync(docId, cancellationToken);
 
             if (itemToDelete is null)
                 return NotFound();

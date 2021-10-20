@@ -15,7 +15,7 @@ namespace FunctionalTests.PublicApi.WikiEndpoints
     {
         private JsonSerializerOptions _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         
-        private readonly int _testWikiId = 1;
+        private readonly int _testWikiId = 3;
         private readonly string _testWikiTitle = "I am a test";
         private readonly string _testWikiDescription = "I am a description";
         private readonly string _testWikiContent = "I am some awesome content";
@@ -49,22 +49,11 @@ namespace FunctionalTests.PublicApi.WikiEndpoints
             var stringResponse = await response.Content.ReadAsStringAsync();
             var model = stringResponse.FromJson<CreateDocResponse>();
 
-            Assert.Equal(_testWikiId, model.Doc.Id);
-            Assert.Equal(_testWikiTitle, model.Doc.Title);
-            Assert.Equal(_testWikiDescription, model.Doc.Description);
-            Assert.Equal(_testWikiContent, model.Doc.Contents);
-            Assert.Equal("admin@ddc.org", model.Doc.CreatedByUsername);
-        }
-
-        [Fact]
-        public async Task ReturnsUnauthorizedWhenNoId()
-        {
-            var jsonContent = GetValidDocItem();
-            var adminToken = ApiTokenHelper.GetAdminWithoutId();
-            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
-            var response = await Client.PostAsync("api/wiki", jsonContent);
-            
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(_testWikiId, model.Result.Id);
+            Assert.Equal(_testWikiTitle, model.Result.Title);
+            Assert.Equal(_testWikiDescription, model.Result.Description);
+            Assert.Equal(_testWikiContent, model.Result.Contents);
+            Assert.Equal("admin@ddc.org", model.Result.CreatedByUserId);
         }
         
         private StringContent GetValidDocItem()

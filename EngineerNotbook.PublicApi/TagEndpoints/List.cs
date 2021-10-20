@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
@@ -10,6 +9,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.TagEndpoints
 {
+    /// <summary>
+    /// Endpoint for retrieving all records of <see cref="Tag"/>
+    /// </summary>
     public class List : BaseAsyncEndpoint
         .WithoutRequest
         .WithResponse<ListTagsResponse>
@@ -31,10 +33,11 @@ namespace EngineerNotebook.PublicApi.TagEndpoints
             Tags = new[]{"TagEndpoints"})]
         public override async Task<ActionResult<ListTagsResponse>> HandleAsync(CancellationToken cancellationToken = default)
         {
-            var response = new ListTagsResponse();
             var items = await _repository.ListAllAsync(cancellationToken);
-            response.Tags.AddRange(items.Select(_mapper.Map<TagDto>));
-            return Ok(response);
+
+            if (items is null)
+                return NotFound();
+            return Ok(items);
         }
     }
 }

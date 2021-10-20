@@ -1,0 +1,23 @@
+@page "/wiki/create"
+
+@inject ILogger<Create> _logger
+@inject IDocService _docService
+@inject NavigationManager _navigationManager
+@inherits Helpers.BlazorComponent
+@namespace EngineerNotebook.BlazorAdmin.Pages.Wiki
+
+<h1 class="mt-3" style="text-align: center">
+    New Wiki Document
+</h1>
+
+<MudContainer>
+    <DocForm OnSave="@OnSave"/>
+</MudContainer>
+
+@code{
+
+    void OnSave(string id)
+    {
+        _navigationManager.NavigateTo($"/wiki/view/{id}");
+    }
+}

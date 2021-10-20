@@ -41,7 +41,8 @@ namespace EngineerNotebook.PublicApi
         public void ConfigureDevelopmentServices(IServiceCollection services)
         {
             // use in-memory database
-            ConfigureInMemoryDatabases(services);
+            //ConfigureInMemoryDatabases(services);
+            ConfigureMySqlDatabase(services);
             ConfigureServices(services);
         }
         
@@ -52,7 +53,8 @@ namespace EngineerNotebook.PublicApi
                     x=>x.MigrationsAssembly(GetType().Assembly.FullName)));
             
             services.AddDbContext<AppIdentityDbContext>(c =>
-                c.UseMySQL(Configuration.GetConnectionString("IdentityConnection")));
+                c.UseMySQL(Configuration.GetConnectionString("IdentityConnection"),
+                    x=>x.MigrationsAssembly(GetType().Assembly.FullName)));
         }
 
         public void ConfigureTestingServices(IServiceCollection services)

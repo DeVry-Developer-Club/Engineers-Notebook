@@ -1,7 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using EngineerNotebook.Shared.Models;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
+    /// <summary>
+    /// Request for updating <see cref="Documentation"/>
+    /// </summary>
     public class UpdateDocRequest : BaseRequest
     {
         public int Id { get; set; }
@@ -14,5 +18,7 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
         
         [Required]
         public string Contents { get; set; }
+
+        public int[] TagIds { get; set; }
     }
 }

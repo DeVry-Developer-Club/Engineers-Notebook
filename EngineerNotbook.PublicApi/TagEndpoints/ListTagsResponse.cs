@@ -1,8 +1,13 @@
 using System;
 using System.Collections.Generic;
+using EngineerNotebook.Shared.Endpoints;
+
 namespace EngineerNotebook.PublicApi.TagEndpoints
 {
-    public class ListTagsResponse : BaseResponse
+    /// <summary>
+    /// Response for retrieving all records of <see cref="Results"/>
+    /// </summary>
+    public class ListTagsResponse : BaseResponse, IDtoResponseCollection<TagDto>
     {
         public ListTagsResponse(Guid correlationId) : base(correlationId)
         {
@@ -13,6 +18,6 @@ namespace EngineerNotebook.PublicApi.TagEndpoints
             
         }
 
-        public List<TagDto> Tags { get; set; } = new();
+        public List<TagDto> Results { get; set; } = new();
     }
 }

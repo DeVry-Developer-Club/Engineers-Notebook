@@ -1,11 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Ardalis.ApiEndpoints;
 using EngineerNotebook.Core.Interfaces;
+using EngineerNotebook.Core.Specifications;
 using EngineerNotebook.Infrastructure.Identity;
+using EngineerNotebook.PublicApi.TagEndpoints;
 using EngineerNotebook.Shared.Authorization;
 using EngineerNotebook.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,18 +18,23 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace EngineerNotebook.PublicApi.WikiEndpoints
 {
+    /// <summary>
+    /// Endpoint which allows for updating a record of <see cref="Documentation"/>
+    /// </summary>
     [Authorize(Roles = Roles.ADMINISTRATORS, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class Update : BaseAsyncEndpoint
         .WithRequest<UpdateDocRequest>
         .WithResponse<UpdateDocResponse>
     {
         private readonly IAsyncRepository<Documentation> _context;
+        private readonly IAsyncRepository<Tag> _tagRepo;
         private UserManager<ApplicationUser> _userManager;
 
-        public Update(IAsyncRepository<Documentation> context, UserManager<ApplicationUser> userManager)
+        public Update(IAsyncRepository<Documentation> context, UserManager<ApplicationUser> userManager, IAsyncRepository<Tag> tagRepo)
         {
             _context = context;
             _userManager = userManager;
+            _tagRepo = tagRepo;
         }
 
         [HttpPut("api/wiki")]
@@ -41,22 +48,23 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
             var response = new UpdateDocResponse(request.CorrelationId());
 
             var username = HttpContext.User.Identity?.Name ?? "";
-            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-
-            if (userId is null)
-                return Unauthorized();
-
-            var existingItem = await _context.GetByIdAsync(request.Id, cancellationToken);
+            
+            var existingItem = await _context.GetByIdAsync(new DocumentationWithTagsSpecification(request.Id), cancellationToken);
+            List<Tag> cached = new();
+            
+            if (request.TagIds != null)
+            {
+                var tags = await _tagRepo.ListAsync(new GetTagsWithIdsSpecification(request.TagIds), cancellationToken);
+                existingItem.Tags = tags.ToList();
+            }
             
             existingItem.Contents = request.Contents;
             existingItem.Title = request.Title;
             existingItem.Description = request.Description;
             existingItem.EditedAt = DateTimeOffset.UtcNow;
-            existingItem.EditedByUserId = userId;
-
-            await _context.UpdateAsync(existingItem, cancellationToken);
+            existingItem.EditedByUserId = username;
             
-            var createdUser = await _userManager.FindByIdAsync(existingItem.CreatedByUserId);
+            await _context.UpdateAsync(existingItem, cancellationToken);
 
             var dto = new DocDto()
             {
@@ -68,11 +76,25 @@ namespace EngineerNotebook.PublicApi.WikiEndpoints
                 CreatedByUserId = existingItem.CreatedByUserId,
                 EditedByUserId = existingItem.EditedByUserId,
                 Contents = existingItem.Contents,
-                EditedByUsername = username,
-                CreatedByUsername = createdUser.UserName ?? "Unknown"
             };
 
-            response.Doc = dto;
+            if (existingItem.Tags != null)
+                dto.Tags = existingItem.Tags.Select(x => new TagDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    TagType = x.TagType
+                }).ToList();
+            
+            if(cached.Any())
+                dto.Tags.AddRange(cached.Select(x=>new TagDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    TagType = x.TagType
+                }));
+            
+            response.Result = dto;
             return response;
         }
     }

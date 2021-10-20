@@ -1,0 +1,95 @@
+@inject ITagService _tagService
+@inject NavigationManager _navigationManager
+@inherits Helpers.BlazorComponent
+@inject ILogger<TagForm> _logger
+@namespace EngineerNotebook.BlazorAdmin.Shared
+@inject ISnackbar _snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Tag" Class="mr-3 mb-n1"/>
+            Tag Form
+        </MudText>
+    </TitleContent>
+
+    <DialogContent>
+        <MudTextField @bind-Value="Tag.Name"
+                      Required="true"
+                      Label="Name"
+                      RequiredError="Name is required"
+                      Class="mt-2 mb-3"/>
+        <MudSelect Label="Type"
+                   @bind-Value="Tag.TagType">
+            <MudSelectItem Value="@TagType.Value">Value</MudSelectItem>
+            <MudSelectItem Value="@TagType.Prefix">Prefix</MudSelectItem>
+            <MudSelectItem Value="@TagType.Phrase">Phrase</MudSelectItem>
+        </MudSelect>
+    </DialogContent>
+    
+    <DialogActions>
+        <MudButton Variant="Variant.Filled"
+            Color="Color.Tertiary"
+            OnClick="Cancel">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+            Color="Color.Primary"
+            Disabled="@(!IsValid())"
+            OnClick="OnSubmitClick">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    [Parameter]
+    public Tag Tag { get; set; } = new();
+
+    [Parameter]
+    public bool IsEdit { get; set; }
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    // This needs to validate our form
+    bool IsValid()
+    {
+        return !string.IsNullOrEmpty(Tag.Name);
+    }
+    
+    // Exit dialog
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+    
+    // Attempt to save current content
+    private async Task OnSubmitClick()
+    {
+        if (!IsValid())
+            return;
+        
+        // Based on mode - invoke the applicable API endpoint
+        var response = IsEdit
+            ? await _tagService.Edit(new UpdateTagRequest
+            {
+                Id = Tag.Id,
+                Name = Tag.Name,
+                TagType = Tag.TagType
+            })
+            : await _tagService.Create(new CreateTagRequest
+            {
+                Name = Tag.Name,
+                TagType = Tag.TagType
+            });
+        
+        // Should get a response worth updating the user on
+        if (response == null || response.Id == 0)
+        {
+            _logger.LogError($"Something went wrong with {(IsEdit ? "editing" : "creating")} Tag");
+            return;
+        }
+
+        _snackbar.Add("Success", Severity.Success);
+        MudDialog.Close(DialogResult.Ok(response));
+    }
+
+}
