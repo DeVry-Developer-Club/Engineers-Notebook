@@ -14,8 +14,13 @@ namespace EngineerNotebook.PublicApi
     {
         public static async Task Main(string[] args)
         {
-            var host = CreateHostBuilder(args)
-                .Build();
+            var hostBuilder = CreateHostBuilder(args);
+            
+            #if RELEASE
+            hostBuilder = hostBuilder.UseEnvironment("Production");
+            #endif
+            
+            var host = hostBuilder.Build();
 
             using (var scope = host.Services.CreateScope())
             {
