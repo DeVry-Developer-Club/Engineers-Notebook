@@ -25,12 +25,12 @@ echo "'$TAG' shall be applied to the created images
 "
 
 echo "Building Public API..."
-docker build -f $API_DIR/Dockerfile -t EngineersNotebook-Public-Api:$TAG .
+docker build -f $API_DIR/Dockerfile -t engineers-notebook-public-api:$TAG .
 
 echo "Completed Building Public API..."
 
 echo "Building Blazor Admin..."
-docker build -f $BLAZOR_DIR/Dockerfile -t EngineerNotebook-Blazor-Admin:$TAG .
+docker build -f $BLAZOR_DIR/Dockerfile -t engineers-notebook-blazor-admin:$TAG .
 
 
 echo "The following images were built
