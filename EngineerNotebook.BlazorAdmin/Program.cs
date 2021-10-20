@@ -18,6 +18,7 @@ namespace EngineerNotebook.BlazorAdmin
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            
             builder.RootComponents.Add<App>("#admin");
 
             var baseUrlConfig = new BaseUrlConfiguration();
