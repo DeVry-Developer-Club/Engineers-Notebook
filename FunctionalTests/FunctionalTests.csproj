@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\EngineerNotbook.PublicApi\EngineerNotbook.PublicApi.csproj" />
+      <ProjectReference Include="..\EngineerNotebook.PublicApi\EngineerNotebook.PublicApi.csproj" />
       <ProjectReference Include="..\EngineerNotebook.Core\EngineerNotebook.Core.csproj" />
     </ItemGroup>
 
