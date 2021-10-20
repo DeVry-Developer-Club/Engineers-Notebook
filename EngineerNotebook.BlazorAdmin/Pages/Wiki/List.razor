@@ -14,12 +14,14 @@
         <MudTh>Title</MudTh>
         <MudTh>Description</MudTh>
         <MudTh>Created By</MudTh>
+        <MudTh>Tags</MudTh>
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Title">@context.Title</MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>
         <MudTd DataLabel="Created By">@context.CreatedByUserId</MudTd>
+        <MudTd DataLabel="Tags">@(context.Tags != null ? string.Join(", ", context.Tags.Select(x=>x.Name)): "")</MudTd>
         <MudTd>
             <MudButton OnClick="@(() => _navigationManager.NavigateTo($"/wiki/view/{context.Id}"))">View</MudButton>
             <MudButton OnClick="@(()=>Delete(context.Id))" Color="Color.Error">Delete</MudButton>

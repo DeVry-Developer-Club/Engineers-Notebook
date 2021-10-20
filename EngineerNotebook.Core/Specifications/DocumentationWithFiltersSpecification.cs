@@ -33,29 +33,16 @@ namespace EngineerNotebook.Core.Specifications
             int mustHave = (int) Math.Ceiling(expected * NeedAtLeast);
             return intersectionCount >= mustHave;
         }
-        
-        public DocumentationWithFiltersSpecification(string[] tagNames)
-        {
-            // Lowercase everything to make life easier
-            tagNames = tagNames.Select(x => x.ToLower()).ToArray();
-            
-            Query
-                .Include(x => x.Tags)
-                .Where(x => 
-                    ContainsEnough(x.Tags
-                    .Select(y => y.Name.ToLower())
-                    .Intersect(tagNames).Count(), tagNames.Length
-            ));
-        }
 
         public DocumentationWithFiltersSpecification(int[] tagIds)
         {
-            Query.Include(x => x.Tags)
-                .Where(x => 
-                    ContainsEnough(x.Tags
-                        .Select(y => y.Id)
-                        .Intersect(tagIds).Count(), tagIds.Length
-                ));
+            int required = (int)Math.Ceiling(tagIds.Length * NeedAtLeast);
+            
+            Query.Include(x => x.Tags)// we need the tags to be part of the result set
+                .Where(x=> x.Tags
+                        .Select(y=>y.Id)
+                        .Count(z => tagIds.Contains(z)) >= required
+                );
         }
     }
 }

@@ -19,6 +19,20 @@ else
             <MudPaper Elevation="2" Width="100%" Square="true" Class="mud-theme-info pa-16 ma-2 mt-3">
                 <h1>@_doc.Title</h1>
                 <p>@_doc.Description</p>    
+                @if (_doc.Tags != null)
+                {
+                    <div class="mt-4">
+                        <MudChipSet ReadOnly="true">
+                            @for (int i = 0; i < _doc.Tags.Count; i++)
+                            {
+                                Color chipColor = GetChipColor(i);
+                                Tag t = _doc.Tags[i];
+                                    
+                                <MudChip Text="@t.Name" Color="@chipColor">@t.Name</MudChip>
+                            }
+                        </MudChipSet>
+                    </div>
+                }
             </MudPaper>
             <div style="margin-bottom: 16px; padding-bottom: 16px;">
                 @(new MarkupString(_doc.Contents))    
@@ -37,6 +51,20 @@ else
     Tag[] _tags;
 
     Color Color => _isEditMode ? Color.Tertiary : Color.Success;
+
+    Color[] _colors = new[]
+    {
+        Color.Primary,
+        Color.Secondary,
+        Color.Success,
+        Color.Warning,
+        Color.Dark
+    };
+
+    Color GetChipColor(int index)
+    {
+        return _colors[index % _colors.Length];
+    }
     
     void ToggleEdit()
     {
