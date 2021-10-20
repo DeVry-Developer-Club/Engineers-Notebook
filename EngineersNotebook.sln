@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.Infrastruc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.Shared", "EngineerNotebook.Shared\EngineerNotebook.Shared.csproj", "{F1275E07-4CA9-4878-92EF-D16DE15A3C0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotbook.PublicApi", "EngineerNotbook.PublicApi\EngineerNotbook.PublicApi.csproj", "{9C0AAE87-E815-405F-9CD5-30E696483E1F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.PublicApi", "EngineerNotebook.PublicApi\EngineerNotebook.PublicApi.csproj", "{9C0AAE87-E815-405F-9CD5-30E696483E1F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EC153687-28EE-4BCA-BA3A-93209FA48F4F}"
 EndProject
