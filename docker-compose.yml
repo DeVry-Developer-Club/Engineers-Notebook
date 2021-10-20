@@ -22,6 +22,8 @@ services:
       - $(PWD)/data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: devry123
+    ports:
+      - "3306:4306"
 
   public-api:
     container_name: public-api
@@ -30,7 +32,8 @@ services:
     networks:
       - "engineers-notebook"
     depends_on:
-      - "db"
+      - "engineer-db"
+      - "identity-db"
       - "devry-identity"
     ports:
       - "5099:5099"
@@ -42,7 +45,8 @@ services:
     networks:
       - "engineers-notebook"
     depends_on:
-      - "db"
+      - "devry-identity"
+      - "engineer-db"
       - "public-api"
     ports:
       - "5001:5001"
