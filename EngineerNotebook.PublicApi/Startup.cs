@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Razor.Templating.Core;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace EngineerNotebook.PublicApi
 {
@@ -35,6 +36,48 @@ namespace EngineerNotebook.PublicApi
             Configuration = configuration;
         }
 
+        ConnectionString GetConnectionString(IConfigurationSection section)
+        {
+            return new ConnectionString(
+                section.GetValue<string>("Server"),
+                section.GetValue<int>("Port"),
+                section.GetValue<string>("Database"),
+                section.GetValue<string>("Username"),
+                section.GetValue<string>("Password"));
+        }
+
+        /// <summary>
+        /// Ensures the provided configuration for a MySql database exists
+        /// - Creates database if it does not exists
+        /// - Executes the migration script to ensure schema exists at runtime
+        /// </summary>
+        /// <param name="configSectionPath"></param>
+        /// <param name="sqlScriptPath"></param>
+        async Task EnsureDatabaseExists(string configSectionPath, string sqlScriptPath)
+        {
+            Console.WriteLine($"Making sure {configSectionPath} database exists using {sqlScriptPath}");
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            try
+            {
+                var config = GetConnectionString(Configuration.GetSection(configSectionPath));
+                using var connection = new MySqlConnection(config.FullConnectionString);
+
+                Console.WriteLine(config.FullConnectionString);
+
+                await connection.OpenAsync();
+
+                var sqlScript = File.ReadAllText(sqlScriptPath);
+                var createDatabase = new MySqlCommand(sqlScript, connection);
+                await createDatabase.ExecuteNonQueryAsync();
+            }
+            catch(Exception ex)
+            {
+                Console.Error.WriteLine($"Was unable to apply migrations for {configSectionPath}:\n\t{ex.Message}");
+                Environment.Exit(1);
+            }
+        }        
+
         private void ApplyMigrations()
         {
 
@@ -42,33 +85,8 @@ namespace EngineerNotebook.PublicApi
                 ?.Equals("false", StringComparison.OrdinalIgnoreCase) ?? true)
                 return;
 
-            try
-            {
-                using var engineerConnection = new MySqlConnection(Configuration.GetConnectionString("EngineerConnection"));
-                engineerConnection.Open();
-
-                var sqlScript = File.ReadAllText(Path.Join("sql", "engineer.sql"));
-                var command = new MySqlCommand(sqlScript, engineerConnection);
-                command.ExecuteNonQuery();
-            }
-            catch(Exception ex)
-            {
-                Console.Error.WriteLine($"Was unable to apply migrations for EngineerConnection:\n\t", ex.Message);
-            }
-
-            try
-            {
-                using var identityConnection = new MySqlConnection(Configuration.GetConnectionString("IdentityConnection"));
-                identityConnection.Open();
-
-                var sqlScript = File.ReadAllText(Path.Join("sql", "identity.sql"));
-                var command = new MySqlCommand(sqlScript, identityConnection);
-                command.ExecuteNonQuery();
-            }
-            catch(Exception ex)
-            {
-                Console.Error.WriteLine("Was unable to apply migrations for IdentityConnection:\n\t", ex.Message);
-            }
+            EnsureDatabaseExists("Databases:Engineer", Path.Join("sql", "engineer.sql")).GetAwaiter().GetResult();
+            EnsureDatabaseExists("Databases:Identity", Path.Join("sql", "identity.sql")).GetAwaiter().GetResult();
         }
 
         private void ConfigureInMemoryDatabases(IServiceCollection services)
@@ -95,12 +113,18 @@ namespace EngineerNotebook.PublicApi
         {
             ApplyMigrations();
 
+            var engCon = GetConnectionString(Configuration.GetSection("Databases:Engineer"));
+            var idCon = GetConnectionString(Configuration.GetSection("Databases:Identity"));
+
+            Console.WriteLine($"The engineer connection string is:\n\t{engCon.FullConnectionString}");
+            Console.WriteLine($"The identity connection string is:\n\t{idCon.FullConnectionString}");
+
             services.AddDbContext<EngineerDbContext>(c =>
-                c.UseMySQL(Configuration.GetConnectionString("EngineerConnection"), 
+                c.UseMySQL(engCon.FullConnectionString, 
                     x=>x.MigrationsAssembly(GetType().Assembly.FullName)));
             
             services.AddDbContext<AppIdentityDbContext>(c =>
-                c.UseMySQL(Configuration.GetConnectionString("IdentityConnection"),
+                c.UseMySQL(idCon.FullConnectionString,
                     x=>x.MigrationsAssembly(GetType().Assembly.FullName)));
         }
 

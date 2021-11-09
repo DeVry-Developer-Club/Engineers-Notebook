@@ -7,28 +7,43 @@ networks:
 services:
   engineer-db:
     container_name: engineer-db
+    hostname: engineer-db
     image: mysql
     restart: always
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - $(PWD)/data:/var/lib/mysql
+      - D:\test\engineer_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: devry123
+      MYSQL_DATABASE: EngineersNotebook
+    ports:
+      - "5306:3306"
+    networks:
+      - "engineers-notebook"
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
 
   devry-identity:
     container_name: devry-identity
+    hostname: devry-identity
     image: mysql
     restart: always
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - $(PWD)/data:/var/lib/mysql
+      - D:\test\identity_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: devry123
+      MYSQL_DATABASE: DevryIdentity
     ports:
-      - "3306:4306"
+      - "4306:3306"
+    networks:
+      - "engineers-notebook"
+    healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
 
   public-api:
     container_name: public-api
-    image: engineers-notebook-public-api:$TAG
-    restart: always
+    image: engineer-notebook-public-api:$TAG
     networks:
       - "engineers-notebook"
     depends_on:
@@ -36,17 +51,3 @@ services:
       - "devry-identity"
     ports:
       - "5099:5099"
-
-  blazor-admin:
-    container_name: blazor-admin
-    image: engineers-notebook-blazor-admin:$TAG
-    restart: always
-    networks:
-      - "engineers-notebook"
-    depends_on:
-      - "devry-identity"
-      - "engineer-db"
-      - "public-api"
-    ports:
-      - "5001:5001"
-
