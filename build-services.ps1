@@ -27,6 +27,6 @@ Write-Host "Creating Docker Image for Public API...."
 docker build -t "engineer-notebook-public-api:$tag" -f "$publicApiDocker" .
 
 Write-Host "Creating Docker Image for Blazor Admin..."
-docker build -t "engineer-notebook-blazor-admin:$tag" -f "$blazorDocker" .
+#docker build -t "engineer-notebook-blazor-admin:$tag" -f "$blazorDocker" .
 
 Write-Host "Build Complete..."
