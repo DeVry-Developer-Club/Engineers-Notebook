@@ -1,26 +1,30 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CF46DB2C-5A91-4555-BAC2-201ACF67DF12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.Core", "EngineerNotebook.Core\EngineerNotebook.Core.csproj", "{15D27509-4328-42C4-84EE-5E3265CC2E10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineerNotebook.Core", "EngineerNotebook.Core\EngineerNotebook.Core.csproj", "{15D27509-4328-42C4-84EE-5E3265CC2E10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.Infrastructure", "EngineerNotebook.Infrastructure\EngineerNotebook.Infrastructure.csproj", "{8725DDB9-259F-453A-9856-A6A48C155644}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineerNotebook.Infrastructure", "EngineerNotebook.Infrastructure\EngineerNotebook.Infrastructure.csproj", "{8725DDB9-259F-453A-9856-A6A48C155644}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.Shared", "EngineerNotebook.Shared\EngineerNotebook.Shared.csproj", "{F1275E07-4CA9-4878-92EF-D16DE15A3C0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineerNotebook.Shared", "EngineerNotebook.Shared\EngineerNotebook.Shared.csproj", "{F1275E07-4CA9-4878-92EF-D16DE15A3C0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.PublicApi", "EngineerNotebook.PublicApi\EngineerNotebook.PublicApi.csproj", "{9C0AAE87-E815-405F-9CD5-30E696483E1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineerNotebook.PublicApi", "EngineerNotebook.PublicApi\EngineerNotebook.PublicApi.csproj", "{9C0AAE87-E815-405F-9CD5-30E696483E1F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EC153687-28EE-4BCA-BA3A-93209FA48F4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalTests", "FunctionalTests\FunctionalTests.csproj", "{F3A6C4E4-4AAD-4849-BF22-5F088DBC0672}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionalTests", "FunctionalTests\FunctionalTests.csproj", "{F3A6C4E4-4AAD-4849-BF22-5F088DBC0672}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerNotebook.BlazorAdmin", "EngineerNotebook.BlazorAdmin\EngineerNotebook.BlazorAdmin.csproj", "{71FEA81B-C061-48AA-A799-D6DA1300FE1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineerNotebook.BlazorAdmin", "EngineerNotebook.BlazorAdmin\EngineerNotebook.BlazorAdmin.csproj", "{71FEA81B-C061-48AA-A799-D6DA1300FE1C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{FAF08545-D38F-4CEC-AE28-7380C10703F3}"
-ProjectSection(SolutionItems) = preProject
-	build_services.sh = build_services.sh
-	docker-compose.yml = docker-compose.yml
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.env = .env
+		build-services.ps1 = build-services.ps1
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +57,9 @@ Global
 		{71FEA81B-C061-48AA-A799-D6DA1300FE1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71FEA81B-C061-48AA-A799-D6DA1300FE1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{15D27509-4328-42C4-84EE-5E3265CC2E10} = {CF46DB2C-5A91-4555-BAC2-201ACF67DF12}
 		{8725DDB9-259F-453A-9856-A6A48C155644} = {CF46DB2C-5A91-4555-BAC2-201ACF67DF12}
@@ -60,5 +67,8 @@ Global
 		{9C0AAE87-E815-405F-9CD5-30E696483E1F} = {CF46DB2C-5A91-4555-BAC2-201ACF67DF12}
 		{F3A6C4E4-4AAD-4849-BF22-5F088DBC0672} = {EC153687-28EE-4BCA-BA3A-93209FA48F4F}
 		{71FEA81B-C061-48AA-A799-D6DA1300FE1C} = {CF46DB2C-5A91-4555-BAC2-201ACF67DF12}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {65D8FB4C-DC9F-42A1-929B-3E3936608643}
 	EndGlobalSection
 EndGlobal
