@@ -1,3 +1,5 @@
+using System;
+using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Text;
 using EngineerNotebook.Core.Constants;
@@ -19,6 +21,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Razor.Templating.Core;
+using System.IO;
 
 namespace EngineerNotebook.PublicApi
 {
@@ -32,8 +35,44 @@ namespace EngineerNotebook.PublicApi
             Configuration = configuration;
         }
 
-        private void ConfigureInMemoryDatabases(IServiceCollection services)
+        private void ApplyMigrations()
         {
+
+            if (Environment.GetEnvironmentVariable("APPLY_MIGRATIONS")
+                ?.Equals("false", StringComparison.OrdinalIgnoreCase) ?? true)
+                return;
+
+            try
+            {
+                using var engineerConnection = new MySqlConnection(Configuration.GetConnectionString("EngineerConnection"));
+                engineerConnection.Open();
+
+                var sqlScript = File.ReadAllText(Path.Join("sql", "engineer.sql"));
+                var command = new MySqlCommand(sqlScript, engineerConnection);
+                command.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                Console.Error.WriteLine($"Was unable to apply migrations for EngineerConnection:\n\t", ex.Message);
+            }
+
+            try
+            {
+                using var identityConnection = new MySqlConnection(Configuration.GetConnectionString("IdentityConnection"));
+                identityConnection.Open();
+
+                var sqlScript = File.ReadAllText(Path.Join("sql", "identity.sql"));
+                var command = new MySqlCommand(sqlScript, identityConnection);
+                command.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                Console.Error.WriteLine("Was unable to apply migrations for IdentityConnection:\n\t", ex.Message);
+            }
+        }
+
+        private void ConfigureInMemoryDatabases(IServiceCollection services)
+        {            
             services.AddDbContext<EngineerDbContext>(c => c.UseInMemoryDatabase("EngineerContext"));
             services.AddDbContext<AppIdentityDbContext>(c => c.UseInMemoryDatabase("Identity"));
         }
@@ -54,6 +93,8 @@ namespace EngineerNotebook.PublicApi
         
         private void ConfigureMySqlDatabase(IServiceCollection services)
         {
+            ApplyMigrations();
+
             services.AddDbContext<EngineerDbContext>(c =>
                 c.UseMySQL(Configuration.GetConnectionString("EngineerConnection"), 
                     x=>x.MigrationsAssembly(GetType().Assembly.FullName)));

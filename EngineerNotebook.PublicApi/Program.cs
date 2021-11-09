@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace EngineerNotebook.PublicApi
 {
@@ -15,7 +16,7 @@ namespace EngineerNotebook.PublicApi
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args)
-                .Build();
+                .Build();                       
 
             using (var scope = host.Services.CreateScope())
             {
@@ -43,6 +44,25 @@ namespace EngineerNotebook.PublicApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    var currentDir = Directory.GetCurrentDirectory();
+                    if (!File.Exists(Path.Join(currentDir, ".env")))
+                        return;
+
+                    foreach(var line in File.ReadAllLines(Path.Join(currentDir, ".env")))
+                    {
+                        var parts = line.Split('=', StringSplitOptions.RemoveEmptyEntries);
+
+                        if (parts.Length != 2)
+                            continue;
+
+                        Environment.SetEnvironmentVariable(parts[0], parts[1]);
+                    }
+                })
+                .ConfigureWebHostDefaults(webBuilder => 
+                { 
+                    webBuilder.UseStartup<Startup>(); 
+                });
     }
 }
