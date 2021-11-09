@@ -13,15 +13,14 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - D:\test\engineer_data:/var/lib/mysql
+      - C:\Users\jonbr_2lj7acl\source\repos\DeVry-Developer-Club\Engineers-Notebook\sql\engineer:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: devry123
-      MYSQL_DATABASE: EngineersNotebook
+      MYSQL_DATABASE: engineersnotebook
     ports:
       - "5306:3306"
     networks:
       - "engineers-notebook"
-    healthcheck:
-        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
 
   devry-identity:
     container_name: devry-identity
@@ -31,23 +30,30 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - D:\test\identity_data:/var/lib/mysql
+      - C:\Users\jonbr_2lj7acl\source\repos\DeVry-Developer-Club\Engineers-Notebook\sql\identity:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: devry123
-      MYSQL_DATABASE: DevryIdentity
+      MYSQL_DATABASE: devryidentity
     ports:
       - "4306:3306"
     networks:
       - "engineers-notebook"
-    healthcheck:
-            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
 
   public-api:
     container_name: public-api
     image: engineer-notebook-public-api:$TAG
+    command: ["./wait-for", "engineer-db:5306", "--", "dotnet", "EngineerNotebook.PublicApi.dll"]
+    environment:
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=devry123
     networks:
       - "engineers-notebook"
     depends_on:
       - "engineer-db"
       - "devry-identity"
     ports:
-      - "5099:5099"
+      - "5099:443"
+      - "6000:80"
+    volumes:
+      - ${USERPROFILE}\source\repos\DeVry-Developer-Club\Engineers-Notebook\EngineerNotebook.PublicApi\appsettings.json:/app/appsettings.json

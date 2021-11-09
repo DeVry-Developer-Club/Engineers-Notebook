@@ -8,8 +8,8 @@
         public string Password { get; init; }
         public int Port { get; init; }
 
-        public string RootConnectionString => $"server={Server};port={Port};user={Username};password={Password};";
-        public string FullConnectionString => $"server={Server};port={Port};database={Database};user={Username};password={Password};";
+        public string RootConnectionString => $"server={Server};port={Port};userid={Username};password={Password};";
+        public string FullConnectionString => $"server={Server};database={Database};userid={Username};password={Password};";
 
         public ConnectionString(string server, int port, string database, string username, string password)
         {

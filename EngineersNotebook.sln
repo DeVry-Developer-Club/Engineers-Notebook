@@ -26,6 +26,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{FAF08545
 		docker-compose.yml = docker-compose.yml
 		initialize-local-database-settings.ps1 = initialize-local-database-settings.ps1
 		sync-prod-migration-scripts.ps1 = sync-prod-migration-scripts.ps1
+		wait-for.sh = wait-for.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql", "sql", "{2DA5FE44-8270-4952-9C61-5E68E1B249DB}"
+	ProjectSection(SolutionItems) = preProject
+		sql\engineer\engineer.sql = sql\engineer\engineer.sql
+		sql\identity\identity.sql = sql\identity\identity.sql
 	EndProjectSection
 EndProject
 Global
@@ -69,6 +76,7 @@ Global
 		{9C0AAE87-E815-405F-9CD5-30E696483E1F} = {CF46DB2C-5A91-4555-BAC2-201ACF67DF12}
 		{F3A6C4E4-4AAD-4849-BF22-5F088DBC0672} = {EC153687-28EE-4BCA-BA3A-93209FA48F4F}
 		{71FEA81B-C061-48AA-A799-D6DA1300FE1C} = {CF46DB2C-5A91-4555-BAC2-201ACF67DF12}
+		{2DA5FE44-8270-4952-9C61-5E68E1B249DB} = {FAF08545-D38F-4CEC-AE28-7380C10703F3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {65D8FB4C-DC9F-42A1-929B-3E3936608643}

@@ -46,49 +46,6 @@ namespace EngineerNotebook.PublicApi
                 section.GetValue<string>("Password"));
         }
 
-        /// <summary>
-        /// Ensures the provided configuration for a MySql database exists
-        /// - Creates database if it does not exists
-        /// - Executes the migration script to ensure schema exists at runtime
-        /// </summary>
-        /// <param name="configSectionPath"></param>
-        /// <param name="sqlScriptPath"></param>
-        async Task EnsureDatabaseExists(string configSectionPath, string sqlScriptPath)
-        {
-            Console.WriteLine($"Making sure {configSectionPath} database exists using {sqlScriptPath}");
-            await Task.Delay(TimeSpan.FromSeconds(5));
-
-            try
-            {
-                var config = GetConnectionString(Configuration.GetSection(configSectionPath));
-                using var connection = new MySqlConnection(config.FullConnectionString);
-
-                Console.WriteLine(config.FullConnectionString);
-
-                await connection.OpenAsync();
-
-                var sqlScript = File.ReadAllText(sqlScriptPath);
-                var createDatabase = new MySqlCommand(sqlScript, connection);
-                await createDatabase.ExecuteNonQueryAsync();
-            }
-            catch(Exception ex)
-            {
-                Console.Error.WriteLine($"Was unable to apply migrations for {configSectionPath}:\n\t{ex.Message}");
-                Environment.Exit(1);
-            }
-        }        
-
-        private void ApplyMigrations()
-        {
-
-            if (Environment.GetEnvironmentVariable("APPLY_MIGRATIONS")
-                ?.Equals("false", StringComparison.OrdinalIgnoreCase) ?? true)
-                return;
-
-            EnsureDatabaseExists("Databases:Engineer", Path.Join("sql", "engineer.sql")).GetAwaiter().GetResult();
-            EnsureDatabaseExists("Databases:Identity", Path.Join("sql", "identity.sql")).GetAwaiter().GetResult();
-        }
-
         private void ConfigureInMemoryDatabases(IServiceCollection services)
         {            
             services.AddDbContext<EngineerDbContext>(c => c.UseInMemoryDatabase("EngineerContext"));
@@ -111,8 +68,6 @@ namespace EngineerNotebook.PublicApi
         
         private void ConfigureMySqlDatabase(IServiceCollection services)
         {
-            ApplyMigrations();
-
             var engCon = GetConnectionString(Configuration.GetSection("Databases:Engineer"));
             var idCon = GetConnectionString(Configuration.GetSection("Databases:Identity"));
 
