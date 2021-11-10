@@ -1,10 +1,8 @@
 using System;
 using MediatR;
 
-namespace EngineerNotebook.Shared
+namespace EngineerNotebook.Shared;
+public abstract class BaseDomainEvent : INotification
 {
-    public abstract class BaseDomainEvent : INotification
-    {
-        public DateTime DateOccurred { get; protected set; } = DateTime.UtcNow;
-    }
+    public DateTime DateOccurred { get; protected set; } = DateTime.UtcNow;
 }

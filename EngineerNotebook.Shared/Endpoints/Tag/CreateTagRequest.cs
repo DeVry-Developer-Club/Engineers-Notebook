@@ -1,11 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using EngineerNotebook.Shared.Models;
 
-namespace EngineerNotebook.Shared.Endpoints.Tag
+namespace EngineerNotebook.Shared.Endpoints.Tag;
+public class CreateTagRequest : IDto
 {
-    public class CreateTagRequest : IDto
-    {
-        [Required] public string Name { get; set; }
-        public TagType TagType { get; set; }
-    }
+    [Required] public string Name { get; set; }
+    public TagType TagType { get; set; }
 }

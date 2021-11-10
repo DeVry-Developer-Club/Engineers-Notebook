@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-
-namespace EngineerNotebook.Shared
+namespace EngineerNotebook.Shared;
+public abstract class BaseEntity
 {
-    public abstract class BaseEntity
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public List<BaseDomainEvent> Events = new();
-    }
+    public List<BaseDomainEvent> Events = new();
 }

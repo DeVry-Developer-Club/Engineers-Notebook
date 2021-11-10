@@ -1,10 +1,8 @@
 using System;
 
-namespace EngineerNotebook.Shared
+namespace EngineerNotebook.Shared;
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public class IgnoreMemberAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public class IgnoreMemberAttribute : Attribute
-    {
         
-    }
 }

@@ -1,8 +1,7 @@
-namespace EngineerNotebook.Shared.Authorization
+namespace EngineerNotebook.Shared.Authorization;
+
+public static class Roles
 {
-    public static class Roles
-    {
-        public const string ADMINISTRATORS = "Administrators";
-        public const string CONTRIBUTORS = "Contributors";
-    }
+    public const string ADMINISTRATORS = "Administrators";
+    public const string CONTRIBUTORS = "Contributors";
 }

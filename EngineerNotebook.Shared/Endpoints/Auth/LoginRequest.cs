@@ -1,10 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace EngineerNotebook.Shared.Endpoints.Auth
+namespace EngineerNotebook.Shared.Endpoints.Auth;
+public class LoginRequest
 {
-    public class LoginRequest
-    {
-        [Required] public string Username { get; set; }
-        [Required] public string Password { get; set; }
-    }
+    [Required] public string Username { get; set; }
+    [Required] public string Password { get; set; }
 }

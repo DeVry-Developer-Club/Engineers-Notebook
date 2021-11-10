@@ -1,7 +1,6 @@
-namespace EngineerNotebook.Shared.Endpoints.Doc
+namespace EngineerNotebook.Shared.Endpoints.Doc;
+
+public class UpdateDocRequest : CreateDocRequest
 {
-    public class UpdateDocRequest : CreateDocRequest
-    {
-        public int Id { get; set; }
-    }
+    public int Id { get; set; }
 }
