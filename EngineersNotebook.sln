@@ -35,6 +35,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql", "sql", "{2DA5FE44-827
 		sql\identity\identity.sql = sql\identity\identity.sql
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp1", "BlazorApp1\BlazorApp1.csproj", "{A42CD5DE-730A-4D39-8DB7-C085BA7AF344}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{71FEA81B-C061-48AA-A799-D6DA1300FE1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71FEA81B-C061-48AA-A799-D6DA1300FE1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71FEA81B-C061-48AA-A799-D6DA1300FE1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A42CD5DE-730A-4D39-8DB7-C085BA7AF344}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A42CD5DE-730A-4D39-8DB7-C085BA7AF344}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A42CD5DE-730A-4D39-8DB7-C085BA7AF344}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A42CD5DE-730A-4D39-8DB7-C085BA7AF344}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,6 +83,7 @@ Global
 		{F3A6C4E4-4AAD-4849-BF22-5F088DBC0672} = {EC153687-28EE-4BCA-BA3A-93209FA48F4F}
 		{71FEA81B-C061-48AA-A799-D6DA1300FE1C} = {CF46DB2C-5A91-4555-BAC2-201ACF67DF12}
 		{2DA5FE44-8270-4952-9C61-5E68E1B249DB} = {FAF08545-D38F-4CEC-AE28-7380C10703F3}
+		{A42CD5DE-730A-4D39-8DB7-C085BA7AF344} = {CF46DB2C-5A91-4555-BAC2-201ACF67DF12}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {65D8FB4C-DC9F-42A1-929B-3E3936608643}

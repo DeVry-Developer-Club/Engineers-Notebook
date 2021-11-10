@@ -13,7 +13,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - D:\test\engineer_data:/var/lib/mysql
-      - C:\Users\jonbr_2lj7acl\source\repos\DeVry-Developer-Club\Engineers-Notebook\sql\engineer:/docker-entrypoint-initdb.d
+      - ${USERPROFILE}\source\repos\DeVry-Developer-Club\Engineers-Notebook\sql\engineer:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: devry123
       MYSQL_DATABASE: engineersnotebook
@@ -30,7 +30,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - D:\test\identity_data:/var/lib/mysql
-      - C:\Users\jonbr_2lj7acl\source\repos\DeVry-Developer-Club\Engineers-Notebook\sql\identity:/docker-entrypoint-initdb.d
+      - ${USERPROFILE}\source\repos\DeVry-Developer-Club\Engineers-Notebook\sql\identity:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: devry123
       MYSQL_DATABASE: devryidentity
@@ -38,6 +38,17 @@ services:
       - "4306:3306"
     networks:
       - "engineers-notebook"
+
+  blazor-admin:
+    container_name: blazor-admin
+    image: engineer-notebook-blazor-admin:$TAG
+    networks:
+      - "engineers-notebook"
+    depends_on:
+      - "public-api"
+    ports:
+      - "6001:443"
+      - "6002:80"
 
   public-api:
     container_name: public-api
@@ -57,3 +68,4 @@ services:
       - "6000:80"
     volumes:
       - ${USERPROFILE}\source\repos\DeVry-Developer-Club\Engineers-Notebook\EngineerNotebook.PublicApi\appsettings.json:/app/appsettings.json
+    
