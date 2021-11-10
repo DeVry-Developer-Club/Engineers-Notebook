@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,11 +13,11 @@
       <PackageReference Include="Ardalis.Specification" Version="5.2.0" />
       <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="5.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.11" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
       <PackageReference Include="Razor.Templating.Core" Version="1.6.0" />
       <PackageReference Include="Select.HtmlToPdf.NetCore" Version="21.1.0" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.13.1" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" />
     </ItemGroup>
 
 </Project>
