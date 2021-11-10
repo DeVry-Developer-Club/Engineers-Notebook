@@ -1,9 +1,7 @@
-namespace EngineerNotebook.Shared
+namespace EngineerNotebook.Shared;
+public class BaseUrlConfiguration
 {
-    public class BaseUrlConfiguration
-    {
-        public const string CONFIG_NAME = "baseUrls";
-        public string ApiBase { get; set; }
-        public string WebBase { get; set; }
-    }
+    public const string CONFIG_NAME = "baseUrls";
+    public string ApiBase { get; set; }
+    public string WebBase { get; set; }
 }

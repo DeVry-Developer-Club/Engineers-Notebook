@@ -1,26 +1,22 @@
-using System.Collections.Generic;
+namespace EngineerNotebook.Shared.Endpoints;
+/// <summary>
+/// Way of identifying client-facing data model
+/// </summary>
+/// <typeparam name="TEntity"></typeparam>
+public interface IDto {}
 
-namespace EngineerNotebook.Shared.Endpoints
+/// <summary>
+/// Way of identifying client-facing response of a data-model
+/// </summary>
+/// <typeparam name="TEntity"></typeparam>
+public interface IDtoResponse<TEntity>
+    where TEntity : class, new()
 {
-    /// <summary>
-    /// Way of identifying client-facing data model
-    /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    public interface IDto {}
+    TEntity Result { get; set; }
+}
 
-    /// <summary>
-    /// Way of identifying client-facing response of a data-model
-    /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    public interface IDtoResponse<TEntity>
-        where TEntity : class, new()
-    {
-        TEntity Result { get; set; }
-    }
-
-    public interface IDtoResponseCollection<TEntity>
-        where TEntity : class, new()
-    {
-        List<TEntity> Results { get; set; }
-    }
+public interface IDtoResponseCollection<TEntity>
+    where TEntity : class, new()
+{
+    List<TEntity> Results { get; set; }
 }

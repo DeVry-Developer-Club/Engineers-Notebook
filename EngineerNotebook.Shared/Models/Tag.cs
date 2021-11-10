@@ -1,22 +1,18 @@
-using System.Collections.Generic;
-using EngineerNotebook.Shared.Interfaces;
 using Newtonsoft.Json;
 
-namespace EngineerNotebook.Shared.Models
+namespace EngineerNotebook.Shared.Models;
+public enum TagType
 {
-    public enum TagType
-    {
-        Prefix,
-        Value,
-        Phrase
-    }
+    Prefix,
+    Value,
+    Phrase
+}
     
-    public class Tag : BaseEntity, IAggregateRoot
-    {
-        public string Name { get; set; }
-        public TagType TagType { get; set; } = TagType.Value;
+public class Tag : BaseEntity, IAggregateRoot
+{
+    public string Name { get; set; }
+    public TagType TagType { get; set; } = TagType.Value;
 
-        [JsonIgnore]
-        public List<Documentation> Docs { get; set; }
-    }
+    [JsonIgnore]
+    public List<Documentation> Docs { get; set; }
 }

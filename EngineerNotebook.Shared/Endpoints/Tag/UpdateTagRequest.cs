@@ -1,7 +1,5 @@
-namespace EngineerNotebook.Shared.Endpoints.Tag
+namespace EngineerNotebook.Shared.Endpoints.Tag;
+public class UpdateTagRequest : CreateTagRequest
 {
-    public class UpdateTagRequest : CreateTagRequest
-    {
-        public int Id { get; set; }
-    }
+    public int Id { get; set; }
 }
