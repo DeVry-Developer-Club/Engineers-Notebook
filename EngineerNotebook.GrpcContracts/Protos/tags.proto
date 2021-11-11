@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option csharp_namespace = "EngineerNotebook.GrpcContracts.Tags";
+
+package tags;
+
+// The greeting service definition.
+service Tags {
+  rpc GetById(IdRequest) returns (TagDto);
+  rpc Delete(IdRequest) returns (DeleteResponse);
+  rpc Create(CreateRequest) returns (TagDto);
+  rpc Update(UpdateRequest) returns (TagDto);
+  rpc GetList(EMPTY) returns (stream TagDto);
+}
+
+message EMPTY{}
+
+enum TagType {
+	Prefix = 0;
+	Value = 1;
+	Phrase = 2;
+}
+
+message IdRequest { 
+	string id = 1;
+}
+
+message DeleteResponse {
+	string status = 1;
+}
+
+message UpdateRequest { 
+	string id = 1;
+	string name = 2;
+	TagType tagType = 3;
+}
+
+message CreateRequest {
+	string name = 1;
+	TagType tagType = 2;
+}
+
+message TagDto {
+	string id = 1;
+	string name = 2;
+	TagType tagType = 3;
+}
+

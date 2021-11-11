@@ -4,16 +4,12 @@ $mypath = $MyInvocation.MyCommand.Path
 $projectDir = Split-Path $mypath -Parent
 
 Write-Host "Setting Server to localhost..."
-dotnet user-secrets set "Databases:Engineer:Server" "localhost"
-dotnet user-secrets set "Databases:Identity:Server" "localhost"
-
+dotnet user-secrets set "Database:Host" "localhost"
 
 Write-Host "Setting Server Port to 3306..."
-dotnet user-secrets set "Databases:Engineer:Port" "3306"
-dotnet user-secrets set "Databases:Identity:Port" "3306"
+dotnet user-secrets set "Database:Port" "27017"
 
 Write-Host "Local database development setup..."
 Write-Host "If your local username and password are different please use the `dotnet use-secrets set` for updating accordingly"
 
-Write-Host "Databases:Engineer:Username | Databases:Engineer:Password"
-Write-Host "Databases:Identity:Username | Databases:Identity:Password"
+Write-Host "Database:Username | Database:Password"

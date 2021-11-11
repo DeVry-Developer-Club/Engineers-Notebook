@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "EngineerNotebook.GrpcContracts.Guide";
+
+package guide;
+
+// The greeting service definition.
+service Guides {
+	rpc Guide(GetByTagsRequest) returns (GuideResponse);
+}
+
+message GetByTagsRequest { 
+	repeated string tagIds = 1;
+}
+
+message GuideResponse {
+	bytes guide = 1; 
+	string contentType = 2;
+}

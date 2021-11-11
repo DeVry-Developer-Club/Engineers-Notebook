@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using EngineerNotebook.Shared.Models;
+using AspNetCore.Identity.Mongo.Model;
 
 namespace EngineerNotebook.PublicApi
 {
@@ -25,11 +27,13 @@ namespace EngineerNotebook.PublicApi
 
                 try
                 {
-                    var context = services.GetRequiredService<EngineerDbContext>();
-                    await EngineerDbContextSeed.SeedAsync(context, loggerFactory);
+                    var tagRepo = services.GetRequiredService<IAsyncRepository<Shared.Models.Tag>>();
+                    var docRepo = services.GetRequiredService<IAsyncRepository<Shared.Models.Documentation>>();
+
+                    await EngineerDbContextSeed.SeedAsync(tagRepo, docRepo, loggerFactory);
                     
-                    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    var userManager = services.GetRequiredService<UserManager<ClubMember>>();
+                    var roleManager = services.GetRequiredService<RoleManager<MongoRole<string>>>();
                     await AppIdentityDbContextSeed.SeedAsync(userManager, roleManager);
                 }
                 catch (Exception ex)

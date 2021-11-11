@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EngineerNotebook.Core.Interfaces;
 using EngineerNotebook.Shared.Extensions;
 using EngineerNotebook.Shared.Models;
 using Microsoft.EntityFrameworkCore;
@@ -10,25 +11,24 @@ namespace EngineerNotebook.Infrastructure.Data
 {
     public class EngineerDbContextSeed
     {
-        public static async Task SeedAsync(EngineerDbContext context, ILoggerFactory loggerFactory, int retry = 0)
+        public static async Task SeedAsync(IAsyncRepository<Shared.Models.Tag> tagRepo,
+            IAsyncRepository<Documentation> docRepo, 
+            ILoggerFactory loggerFactory, 
+            int retry = 0)
         {
             int retryForAvailability = retry;
-
+            
             try
             {
                 // SEED TAGS --> IF NONE EXIST ALREADY
-                if (!await context.Tags.AnyAsync())
-                {
-                    await context.Tags.AddRangeAsync(GetPreconfiguredTags());
-                    await context.SaveChangesAsync();
-                }
+                if (!await tagRepo.AnyAsync())
+                    foreach (var tag in GetPreconfiguredTags())
+                        await tagRepo.Create(tag);
                 
                 // SEED DOCS --> IF NONE EXIST ALREADY
-                if (!await context.Docs.AnyAsync())
-                {
-                    await context.Docs.AddRangeAsync(GetPreconfiguredDocs());
-                    await context.SaveChangesAsync();
-                }
+                if (!await docRepo.AnyAsync())
+                    foreach (var doc in GetPreconfiguredDocs())
+                        await docRepo.Create(doc);
                 
             }
             catch (Exception ex)
@@ -38,7 +38,7 @@ namespace EngineerNotebook.Infrastructure.Data
                     retryForAvailability++;
                     var log = loggerFactory.CreateLogger<EngineerDbContextSeed>();
                     log.LogError(ex.Message);
-                    await SeedAsync(context, loggerFactory, retryForAvailability);
+                    await SeedAsync(tagRepo, docRepo, loggerFactory, retryForAvailability);
                 }
 
                 throw;
@@ -69,9 +69,9 @@ namespace EngineerNotebook.Infrastructure.Data
             };
         }
 
-        static IEnumerable<Tag> GetPreconfiguredTags()
+        static IEnumerable<Shared.Models.Tag> GetPreconfiguredTags()
         {
-            return new List<Tag>
+            return new List<Shared.Models.Tag>
             {
                 new() { Name = "Ai" },
                 new() { Name = "Azure" },
