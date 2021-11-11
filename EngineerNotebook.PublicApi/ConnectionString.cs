@@ -1,20 +1,19 @@
 ﻿namespace EngineerNotebook.PublicApi
 {
-    public class ConnectionString
+    public class ConnectionString : IDatabaseOptions
     {
-        public string Server { get; init; }
-        public string Database { get; init; }
-        public string Username { get; init; }
-        public string Password { get; init; }
-        public int Port { get; init; }
+        public string Host { get; set; }
+        public string DatabaseName { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public int Port { get; set; }
 
-        public string RootConnectionString => $"server={Server};port={Port};userid={Username};password={Password};";
-        public string FullConnectionString => $"server={Server};database={Database};userid={Username};password={Password};";
+        public string FullConnectionString => $@"mongodb://{Host}:{Port}";
 
         public ConnectionString(string server, int port, string database, string username, string password)
         {
-            this.Server = server;
-            this.Database = database;
+            this.Host = server;
+            this.DatabaseName = database;
             this.Port = port;
             this.Username = username;
             this.Password = password;

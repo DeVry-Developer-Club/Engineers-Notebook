@@ -6,7 +6,7 @@ namespace EngineerNotebook.Core.Specifications
 {
     public class GetTagsWithIdsSpecification : Specification<Tag>
     {
-        public GetTagsWithIdsSpecification(int[] ids)
+        public GetTagsWithIdsSpecification(string[] ids)
         {
             Query
                 .Where(x => ids.Contains(x.Id));

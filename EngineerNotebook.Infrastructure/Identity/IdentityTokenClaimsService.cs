@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EngineerNotebook.Core.Constants;
 using EngineerNotebook.Core.Interfaces;
+using EngineerNotebook.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -13,9 +14,9 @@ namespace EngineerNotebook.Infrastructure.Identity
 {
     public class IdentityTokenClaimsService : ITokenClaimsService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ClubMember> _userManager;
 
-        public IdentityTokenClaimsService(UserManager<ApplicationUser> userManager)
+        public IdentityTokenClaimsService(UserManager<ClubMember> userManager)
         {
             _userManager = userManager;
         }

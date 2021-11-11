@@ -1,12 +1,4 @@
-using System;
-using MySql.Data.MySqlClient;
-using System.Collections.Generic;
 using System.Text;
-using EngineerNotebook.Core.Constants;
-using EngineerNotebook.Core.Interfaces;
-using EngineerNotebook.Infrastructure.Data;
-using EngineerNotebook.Infrastructure.Identity;
-using EngineerNotebook.Infrastructure.Utility;
 using EngineerNotebook.Shared;
 using EngineerNotebook.Shared.Models;
 using MediatR;
@@ -14,15 +6,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Razor.Templating.Core;
-using System.IO;
-using System.Threading.Tasks;
+using AspNetCore.Identity.Mongo;
+using AspNetCore.Identity.Mongo.Model;
+using MongoDB.Driver;
 
 namespace EngineerNotebook.PublicApi
 {
@@ -39,65 +29,32 @@ namespace EngineerNotebook.PublicApi
         ConnectionString GetConnectionString(IConfigurationSection section)
         {
             return new ConnectionString(
-                section.GetValue<string>("Server"),
+                section.GetValue<string>("Host"),
                 section.GetValue<int>("Port"),
-                section.GetValue<string>("Database"),
+                section.GetValue<string>("DatabaseName"),
                 section.GetValue<string>("Username"),
                 section.GetValue<string>("Password"));
         }
 
-        private void ConfigureInMemoryDatabases(IServiceCollection services)
-        {            
-            services.AddDbContext<EngineerDbContext>(c => c.UseInMemoryDatabase("EngineerContext"));
-            services.AddDbContext<AppIdentityDbContext>(c => c.UseInMemoryDatabase("Identity"));
-        }
-        
-        public void ConfigureDevelopmentServices(IServiceCollection services)
-        {
-            // use in-memory database
-            //ConfigureInMemoryDatabases(services);
-            ConfigureMySqlDatabase(services);
-            ConfigureServices(services);
-        }
-            
-        public void ConfigureProductionServices(IServiceCollection services)
-        {
-            ConfigureMySqlDatabase(services);
-            ConfigureServices(services);
-        }
-        
-        private void ConfigureMySqlDatabase(IServiceCollection services)
-        {
-            var engCon = GetConnectionString(Configuration.GetSection("Databases:Engineer"));
-            var idCon = GetConnectionString(Configuration.GetSection("Databases:Identity"));
-
-            Console.WriteLine($"The engineer connection string is:\n\t{engCon.FullConnectionString}");
-            Console.WriteLine($"The identity connection string is:\n\t{idCon.FullConnectionString}");
-
-            services.AddDbContext<EngineerDbContext>(c =>
-                c.UseMySQL(engCon.FullConnectionString, 
-                    x=>x.MigrationsAssembly(GetType().Assembly.FullName)));
-            
-            services.AddDbContext<AppIdentityDbContext>(c =>
-                c.UseMySQL(idCon.FullConnectionString,
-                    x=>x.MigrationsAssembly(GetType().Assembly.FullName)));
-        }
-
-        public void ConfigureTestingServices(IServiceCollection services)
-        {
-            ConfigureInMemoryDatabases(services);
-            ConfigureServices(services);
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppIdentityDbContext>()
-                .AddDefaultTokenProviders();
+            services.Configure<ConnectionString>(Configuration.GetSection("Database"));
+            services.AddSingleton<IDatabaseOptions>(x => x.GetRequiredService<IOptions<ConnectionString>>().Value);
+            services.AddIdentityMongoDbProvider<ClubMember, MongoRole<string>, string>(options =>
+            {
+
+            },
+            mongo =>
+            {
+                var idCon = GetConnectionString(Configuration.GetSection("Database"));
+                mongo.ConnectionString = $"{idCon.FullConnectionString}/{idCon.DatabaseName}";
+            })
+            .AddDefaultTokenProviders();
 
             #region Utilities
 
-            services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
+            services.AddGrpc();
+            services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseDbService<>));
             services.AddScoped<ITokenClaimsService, IdentityTokenClaimsService>();
             
             services.AddSingleton<IHtmlToPdfConverter, HtmlToPdfConverter>();
@@ -133,7 +90,7 @@ namespace EngineerNotebook.PublicApi
                         ValidateIssuer = false
                     };
                 });
-            
+            services.AddAuthorization();
             services.AddCors(options =>
             {
                 options.AddPolicy(name: CORS_POLICY,
@@ -144,49 +101,17 @@ namespace EngineerNotebook.PublicApi
                             .TrimEnd('/'));
                         builder.AllowAnyMethod();
                         builder.AllowAnyHeader();
+                        builder.WithExposedHeaders("Grpc-Status",
+                            "Grpc-Message",
+                            "Grpc-Encoding",
+                            "Grpc-Accept-Encoding");
                     });
             });
             
             #endregion
             
-            services.AddControllers();
-            services.AddMediatR(typeof(Tag).Assembly);
+            services.AddMediatR(typeof(Shared.Models.Tag).Assembly);
             services.AddAutoMapper(typeof(Startup).Assembly);
-            services.AddSwaggerGen(x =>
-            {
-                x.SwaggerDoc("v1", new OpenApiInfo { Title = "Engineer Notebook API", Version = "v1" });
-                x.EnableAnnotations();
-                x.SchemaFilter<CustomSchemaFilters>();
-                x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
-Enter 'Bearer' [space] and then your token in the text input below.
-\r\n\r\nExample: 'Bearer 123456789abcdef'",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                x.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header,
-
-                        },
-                        new List<string>()
-                    }
-                });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -199,17 +124,18 @@ Enter 'Bearer' [space] and then your token in the text input below.
             app.UseRouting();
             app.UseCors(CORS_POLICY);
             app.UseAuthorization();
-            
-            // Serve generated swagger as a JSON endpoint
-            app.UseSwagger();
-            app.UseSwaggerUI(x =>
-            {
-                x.SwaggerEndpoint("/swagger/v1/swagger.json", "Engineer Notebook API V1");
-            });
 
+            app.UseGrpcWeb();
+            
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapGet("/", () => "Running");
+                endpoints.MapGet("/health", () => "ok");
+
+                endpoints.MapGrpcService<AuthenticationService>().EnableGrpcWeb().RequireCors(CORS_POLICY);
+                endpoints.MapGrpcService<DocumentationService>().EnableGrpcWeb().RequireCors(CORS_POLICY);
+                endpoints.MapGrpcService<TagService>().EnableGrpcWeb().RequireCors(CORS_POLICY);
+                endpoints.MapGrpcService<GuideService>().EnableGrpcWeb().RequireCors(CORS_POLICY);
             });
         }
     }
