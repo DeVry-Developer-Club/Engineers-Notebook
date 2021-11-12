@@ -8,47 +8,17 @@ services:
   engineer-db:
     container_name: engineer-db
     hostname: engineer-db
-    image: mysql
-    restart: always
-    command: --default-authentication-plugin=mysql_native_password
+    image: mongo
+    restart: always    
     volumes:
-      - D:\test\engineer_data:/var/lib/mysql
-      - ${USERPROFILE}\source\repos\DeVry-Developer-Club\Engineers-Notebook\sql\engineer:/docker-entrypoint-initdb.d
+      - D:\test:/data/db
+    ports:
+      - 27017:27017
     environment:
-      MYSQL_ROOT_PASSWORD: devry123
-      MYSQL_DATABASE: engineersnotebook
-    ports:
-      - "5306:3306"
+      MONGO_INITDB_ROOT_PASSWORD: devry123
+      MONGO_INITDB_ROOT_USERNAME: root
     networks:
       - "engineers-notebook"
-
-  devry-identity:
-    container_name: devry-identity
-    hostname: devry-identity
-    image: mysql
-    restart: always
-    command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - D:\test\identity_data:/var/lib/mysql
-      - ${USERPROFILE}\source\repos\DeVry-Developer-Club\Engineers-Notebook\sql\identity:/docker-entrypoint-initdb.d
-    environment:
-      MYSQL_ROOT_PASSWORD: devry123
-      MYSQL_DATABASE: devryidentity
-    ports:
-      - "4306:3306"
-    networks:
-      - "engineers-notebook"
-
-  blazor-admin:
-    container_name: blazor-admin
-    image: engineer-notebook-blazor-admin:$TAG
-    networks:
-      - "engineers-notebook"
-    depends_on:
-      - "public-api"
-    ports:
-      - "6001:443"
-      - "6002:80"
 
   public-api:
     container_name: public-api
@@ -62,7 +32,6 @@ services:
       - "engineers-notebook"
     depends_on:
       - "engineer-db"
-      - "devry-identity"
     ports:
       - "5099:443"
       - "6000:80"
