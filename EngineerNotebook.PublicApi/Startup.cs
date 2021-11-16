@@ -13,6 +13,7 @@ using Razor.Templating.Core;
 using AspNetCore.Identity.Mongo;
 using AspNetCore.Identity.Mongo.Model;
 using MongoDB.Driver;
+using AspNetCore.Identity.MongoDbCore.Models;
 
 namespace EngineerNotebook.PublicApi
 {
@@ -40,16 +41,12 @@ namespace EngineerNotebook.PublicApi
         {
             services.Configure<ConnectionString>(Configuration.GetSection("Database"));
             services.AddSingleton<IDatabaseOptions>(x => x.GetRequiredService<IOptions<ConnectionString>>().Value);
-            services.AddIdentityMongoDbProvider<ClubMember, MongoRole<string>, string>(options =>
-            {
 
-            },
-            mongo =>
-            {
-                var idCon = GetConnectionString(Configuration.GetSection("Database"));
-                mongo.ConnectionString = $"{idCon.FullConnectionString}/{idCon.DatabaseName}";
-            })
-            .AddDefaultTokenProviders();
+            var idCon = GetConnectionString(Configuration.GetSection("Database"));
+
+            services.AddIdentity<ClubMember, MongoIdentityRole<Guid>>()
+                .AddMongoDbStores<ClubMember, MongoIdentityRole<Guid>, Guid>(idCon.FullConnectionString, idCon.DatabaseName)
+                .AddDefaultTokenProviders();
 
             #region Utilities
 

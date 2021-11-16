@@ -38,7 +38,11 @@ public class AuthenticationService : Authentication.AuthenticationBase
     {
         var response = new AuthenticationResponse();
 
-        var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, false, true);
+        Console.WriteLine(request.Username);
+        Console.WriteLine(request.Password);
+        Console.WriteLine(_signInManager is null);
+
+        var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, false, false);
 
         response.Result = result.Succeeded;
         response.IsLockedOut = result.IsLockedOut;

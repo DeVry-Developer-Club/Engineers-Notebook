@@ -10,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="Ardalis.ApiEndpoints" Version="3.1.0" />
         <PackageReference Include="AspNetCore.Identity.Mongo" Version="8.3.3" />
+        <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="3.1.2" />
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
         <PackageReference Include="Grpc.AspNetCore.Web" Version="2.40.0" />
         <PackageReference Include="MediatR" Version="9.0.0" />
@@ -23,12 +24,11 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MySql.Data" Version="8.0.27" />
-        <PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.8" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.2.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" />
+        <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
     </ItemGroup>
 
     <ItemGroup>
