@@ -8,13 +8,15 @@ services:
   engineer-db:
     container_name: engineer-db
     hostname: engineer-db
-    image: mongo
+    image: mongo:5.0
     restart: always    
     volumes:
       - D:\test:/data/db
+      - ${USERPROFILE}\source\repos\DeVry-Developer-Club\Engineers-Notebook\init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     ports:
       - 27017:27017
     environment:
+      MONGO_INITDB_DATABASE: engineersnotebook
       MONGO_INITDB_ROOT_PASSWORD: devry123
       MONGO_INITDB_ROOT_USERNAME: root
     networks:
@@ -23,7 +25,7 @@ services:
   public-api:
     container_name: public-api
     image: engineer-notebook-public-api:$TAG
-    command: ["./wait-for", "engineer-db:5306", "--", "dotnet", "EngineerNotebook.PublicApi.dll"]
+    command: ["./wait-for", "engineer-db:27017", "--", "dotnet", "EngineerNotebook.PublicApi.dll"]
     environment:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx

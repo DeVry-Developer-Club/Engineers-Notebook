@@ -1,4 +1,5 @@
 using AspNetCore.Identity.Mongo.Model;
+using AspNetCore.Identity.MongoDbCore.Models;
 using EngineerNotebook.Core.Constants;
 using EngineerNotebook.Shared.Authorization;
 using EngineerNotebook.Shared.Models;
@@ -10,12 +11,12 @@ namespace EngineerNotebook.Infrastructure.Identity
     public class AppIdentityDbContextSeed
     {
         public static async Task SeedAsync(UserManager<ClubMember> userManager,
-            RoleManager<MongoRole<string>> roleManager)
+            RoleManager<MongoIdentityRole<Guid>> roleManager)
         {
             #region Add the necessary roles for our application
             if (!roleManager.Roles.Any())
             {
-                await roleManager.CreateAsync(new MongoRole<string>(Roles.ADMINISTRATORS));
+                await roleManager.CreateAsync(new MongoIdentityRole<Guid>(Roles.ADMINISTRATORS));
             }
             #endregion
 

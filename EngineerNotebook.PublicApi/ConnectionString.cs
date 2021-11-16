@@ -8,7 +8,14 @@
         public string Password { get; set; }
         public int Port { get; set; }
 
-        public string FullConnectionString => $@"mongodb://{Host}:{Port}";
+        public string FullConnectionString => $@"mongodb://{UserPass()}{Host}:{Port}";
+
+        public string UserPass()
+        {
+            if (!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
+                return $"{Username}:{Password}@";
+            return "";
+        }
 
         public ConnectionString(string server, int port, string database, string username, string password)
         {

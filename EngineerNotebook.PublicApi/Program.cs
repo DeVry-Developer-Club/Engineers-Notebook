@@ -1,15 +1,10 @@
-using System;
-using System.Threading.Tasks;
-using EngineerNotebook.Infrastructure.Data;
-using EngineerNotebook.Infrastructure.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System.IO;
 using EngineerNotebook.Shared.Models;
 using AspNetCore.Identity.Mongo.Model;
+using AspNetCore.Identity.MongoDbCore.Models;
 
 namespace EngineerNotebook.PublicApi
 {
@@ -19,7 +14,7 @@ namespace EngineerNotebook.PublicApi
         {
             var host = CreateHostBuilder(args)
                 .Build();                       
-
+            
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -27,13 +22,13 @@ namespace EngineerNotebook.PublicApi
 
                 try
                 {
-                    var tagRepo = services.GetRequiredService<IAsyncRepository<Shared.Models.Tag>>();
-                    var docRepo = services.GetRequiredService<IAsyncRepository<Shared.Models.Documentation>>();
+                    var tagRepo = services.GetRequiredService<IAsyncRepository<Tag>>();
+                    var docRepo = services.GetRequiredService<IAsyncRepository<Documentation>>();
 
                     await EngineerDbContextSeed.SeedAsync(tagRepo, docRepo, loggerFactory);
                     
                     var userManager = services.GetRequiredService<UserManager<ClubMember>>();
-                    var roleManager = services.GetRequiredService<RoleManager<MongoRole<string>>>();
+                    var roleManager = services.GetRequiredService<RoleManager<MongoIdentityRole<Guid>>>();
                     await AppIdentityDbContextSeed.SeedAsync(userManager, roleManager);
                 }
                 catch (Exception ex)
