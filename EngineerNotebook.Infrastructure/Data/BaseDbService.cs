@@ -21,6 +21,13 @@ public class BaseDbService<TEntity> : IAsyncRepository<TEntity> where TEntity : 
         return count > 0;
     }
 
+    public virtual async Task<IList<TEntity>> Find(FilterDefinition<TEntity> filter, CancellationToken cancellationToken = default)
+    {
+        return await Collection.Aggregate()
+            .Match(filter)
+            .ToListAsync();
+    }
+
     public virtual async Task<IList<TEntity>> Get(CancellationToken cancellationToken = default)
     {
         return await Collection.GetAllAsync(cancellationToken);

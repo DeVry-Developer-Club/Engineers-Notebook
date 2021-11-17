@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EngineerNotebook.Core.Interfaces;
 using EngineerNotebook.Shared.Extensions;
@@ -20,15 +21,33 @@ namespace EngineerNotebook.Infrastructure.Data
             
             try
             {
+                Random random = new Random();
+                var tags = new List<Shared.Models.Tag>();
+
                 // SEED TAGS --> IF NONE EXIST ALREADY
                 if (!await tagRepo.AnyAsync())
                     foreach (var tag in GetPreconfiguredTags())
-                        await tagRepo.Create(tag);
+                    {
+                        var result = await tagRepo.Create(tag);
+                        tags.Add(result.Value);
+                    }
                 
                 // SEED DOCS --> IF NONE EXIST ALREADY
                 if (!await docRepo.AnyAsync())
                     foreach (var doc in GetPreconfiguredDocs())
+                    {
+                        int count = random.Next(0, tags.Count);
+                        List<string> ids = new();
+
+                        for(int i = 0; i < count; i++)
+                        {
+                            int index = random.Next(0, tags.Count);
+                            ids.Add(tags[index].Id);
+                        }
+
+                        doc.Tags = ids.Distinct().ToList();
                         await docRepo.Create(doc);
+                    }
                 
             }
             catch (Exception ex)

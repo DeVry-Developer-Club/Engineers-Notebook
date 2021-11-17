@@ -19,15 +19,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{FAF08545
 	ProjectSection(SolutionItems) = preProject
 		.env = .env
 		build-services.ps1 = build-services.ps1
+		docker-compose-linux.yml = docker-compose-linux.yml
 		docker-compose.yml = docker-compose.yml
 		init-mongo.js = init-mongo.js
 		initialize-local-database-settings.ps1 = initialize-local-database-settings.ps1
+		save-images.ps1 = save-images.ps1
 		wait-for.sh = wait-for.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineerNotebook.GrpcContracts", "EngineerNotebook.GrpcContracts\EngineerNotebook.GrpcContracts.csproj", "{E83CE25E-4F9F-41C1-8679-496D9BFE93AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndpointTests", "EndpointTests\EndpointTests.csproj", "{DF2D5DFB-FFDA-4E80-BF09-6040961178E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EndpointTests", "EndpointTests\EndpointTests.csproj", "{DF2D5DFB-FFDA-4E80-BF09-6040961178E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

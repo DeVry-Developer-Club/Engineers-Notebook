@@ -11,8 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Razor.Templating.Core;
 using AspNetCore.Identity.Mongo;
-using AspNetCore.Identity.Mongo.Model;
-using MongoDB.Driver;
 using AspNetCore.Identity.MongoDbCore.Models;
 
 namespace EngineerNotebook.PublicApi

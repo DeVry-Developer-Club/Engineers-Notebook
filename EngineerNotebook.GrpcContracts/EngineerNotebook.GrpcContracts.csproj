@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\guide.proto"/>
-    <Protobuf Include="Protos\authentication.proto"/>
-    <Protobuf Include="Protos\tags.proto"/>
-    <Protobuf Include="Protos\documents.proto"/>
+    <Protobuf Include="Protos\guide.proto" />
+    <Protobuf Include="Protos\authentication.proto" />
+    <Protobuf Include="Protos\tags.proto" />
+    <Protobuf Include="Protos\documents.proto" />
   </ItemGroup>
 
   <ItemGroup>

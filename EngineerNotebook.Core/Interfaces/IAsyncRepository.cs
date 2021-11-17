@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EngineerNotebook.Shared;
 using EngineerNotebook.Shared.Models;
+using MongoDB.Driver;
 
 namespace EngineerNotebook.Core.Interfaces
 {
@@ -32,6 +33,14 @@ namespace EngineerNotebook.Core.Interfaces
         /// <param name="id"></param>
         /// <returns>Record of <typeparamref name="T"/> if found</returns>
         Task<ResultOf<T>> Find(string id, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Find <typeparamref name="T"/> records where filter matches
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<IList<T>> Find(FilterDefinition<T> filter, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Find all records that meet the criteria specified in <paramref name="condition"/>

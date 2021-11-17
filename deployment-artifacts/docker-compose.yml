@@ -1,0 +1,42 @@
+version: "3.8"
+
+networks:
+  engineers-notebook:
+    name: engineers-notebook
+
+services:
+  engineer-db:
+    container_name: engineer-db
+    hostname: engineer-db
+    image: mongo:5.0
+    restart: always    
+    volumes:
+      - $CURRENT_DIR/engineers-notebook-data:/data/db
+      - $CURRENT_DIR/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: engineersnotebook
+      MONGO_INITDB_ROOT_PASSWORD: $DATABASE_PASSWORD
+      MONGO_INITDB_ROOT_USERNAME: $DATABASE_USERNAME
+    networks:
+      - "engineers-notebook"
+
+  public-api:
+    container_name: public-api
+    image: engineer-notebook-public-api:$TAG
+    command: ["./wait-for", "engineer-db:27017", "--", "dotnet", "EngineerNotebook.PublicApi.dll"]
+    environment:
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=$SSL_PASSWORD
+    networks:
+      - "engineers-notebook"
+    depends_on:
+      - "engineer-db"
+    ports:
+      - "5099:443"
+      - "6000:80"
+    volumes:
+      - $CURRENT_DIR/appsettings.json:/app/appsettings.json
+    
