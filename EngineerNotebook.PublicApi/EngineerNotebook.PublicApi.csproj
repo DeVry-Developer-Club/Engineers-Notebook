@@ -33,7 +33,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\EngineerNotebook.Core\EngineerNotebook.Core.csproj" />
-      <ProjectReference Include="..\EngineerNotebook.GrpcContracts\EngineerNotebook.GrpcContracts.csproj" />
       <ProjectReference Include="..\EngineerNotebook.Infrastructure\EngineerNotebook.Infrastructure.csproj" />
     </ItemGroup>
 

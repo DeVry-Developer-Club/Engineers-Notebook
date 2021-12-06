@@ -10,8 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Razor.Templating.Core;
-using AspNetCore.Identity.Mongo;
 using AspNetCore.Identity.MongoDbCore.Models;
+using EngineerNotebook.PublicApi.Endpoints;
 
 namespace EngineerNotebook.PublicApi
 {
@@ -48,7 +48,6 @@ namespace EngineerNotebook.PublicApi
 
             #region Utilities
 
-            services.AddGrpc();
             services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseDbService<>));
             services.AddScoped<ITokenClaimsService, IdentityTokenClaimsService>();
             
@@ -91,21 +90,18 @@ namespace EngineerNotebook.PublicApi
                 options.AddPolicy(name: CORS_POLICY,
                     builder =>
                     {
-                        builder.WithOrigins(baseUrlConfig.WebBase
-                            .Replace("host.docker.internal", "localhost")
-                            .TrimEnd('/'));
+                        //builder.WithOrigins(baseUrlConfig.WebBase
+                        //    .Replace("host.docker.internal", "localhost")
+                        //    .TrimEnd('/'));
+                        builder.AllowAnyOrigin();
                         builder.AllowAnyMethod();
                         builder.AllowAnyHeader();
-                        builder.WithExposedHeaders("Grpc-Status",
-                            "Grpc-Message",
-                            "Grpc-Encoding",
-                            "Grpc-Accept-Encoding");
                     });
             });
             
             #endregion
             
-            services.AddMediatR(typeof(Shared.Models.Tag).Assembly);
+            services.AddMediatR(typeof(Tag).Assembly);
             services.AddAutoMapper(typeof(Startup).Assembly);
         }
 
@@ -118,19 +114,18 @@ namespace EngineerNotebook.PublicApi
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(CORS_POLICY);
+            app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseGrpcWeb();
             
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", () => "Running");
                 endpoints.MapGet("/health", () => "ok");
 
-                endpoints.MapGrpcService<AuthenticationService>().EnableGrpcWeb().RequireCors(CORS_POLICY);
-                endpoints.MapGrpcService<DocumentationService>().EnableGrpcWeb().RequireCors(CORS_POLICY);
-                endpoints.MapGrpcService<TagService>().EnableGrpcWeb().RequireCors(CORS_POLICY);
-                endpoints.MapGrpcService<GuideService>().EnableGrpcWeb().RequireCors(CORS_POLICY);
+                endpoints.AddAuthEndpoints();
+                endpoints.AddDocEndpoints();
+                endpoints.AddTagEndpoints();
+                endpoints.AddGuideEndpoints();
             });
         }
     }

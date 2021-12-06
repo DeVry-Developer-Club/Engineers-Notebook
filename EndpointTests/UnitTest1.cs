@@ -1,13 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using EngineerNotebook.GrpcContracts.Authentication;
-using EngineerNotebook.GrpcContracts.Guide;
-using Grpc.Net.Client;
 using System.Threading.Tasks;
 using Grpc.Core;
 using System.Collections.Generic;
 using System.Threading;
-using EngineerNotebook.GrpcContracts.Tags;
-using EngineerNotebook.GrpcContracts;
 using System.Linq;
 
 namespace EndpointTests;
@@ -15,21 +10,6 @@ namespace EndpointTests;
 public class UnitTest1
 {
     const string RemoteAddress = "https://localhost:5099";
-
-    [TestMethod]
-    public async Task TestLocalAuthentication()
-    {
-        var client = new Authentication.AuthenticationClient(GrpcChannel.ForAddress(RemoteAddress));
-
-        var result = await client.AuthenticateAsync(new()
-        {
-            Username = "admin@ddc.org",
-            Password = "Pass@word1"
-        });
-
-        Assert.IsTrue(result.Result);
-        Assert.IsNotNull(result.Token);
-    }
 
     [TestMethod]
     public async Task AddTagToItem()
@@ -84,22 +64,4 @@ public class UnitTest1
         //Assert.IsNotNull(response);
     }
 
-    [TestMethod]
-    public async Task TestLocalGuide()
-    {
-        var client = new Guides.GuidesClient(GrpcChannel.ForAddress(RemoteAddress));
-        GetByTagsRequest request = new GetByTagsRequest();
-        request.TagIds.AddRange(new[]
-        {
-            "61943caba67b5062d533ab91",
-            "61943caba67b5062d533ab83",
-            "61943caba67b5062d533ab85"
-        });
-
-        var response = await client.GuideAsync(request);
-        await System.IO.File.WriteAllBytesAsync("test.pdf", response.Guide.ToByteArray());
-        Assert.IsNotNull(response);
-        Assert.IsNotNull(response.ContentType);
-        Assert.IsNotNull(response.Guide);
-    }
 }
