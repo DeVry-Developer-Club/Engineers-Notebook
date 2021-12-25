@@ -1,5 +1,4 @@
-﻿using AspNetCore.Identity.Mongo.Model;
-using AspNetCore.Identity.MongoDbCore.Models;
+﻿using AspNetCore.Identity.MongoDbCore.Models;
 
 namespace EngineerNotebook.Shared.Models;
 public class ClubMember : MongoIdentityUser<System.Guid>

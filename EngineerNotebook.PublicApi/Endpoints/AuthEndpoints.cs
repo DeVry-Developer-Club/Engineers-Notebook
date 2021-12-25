@@ -1,6 +1,7 @@
 ﻿using EngineerNotebook.Shared.Endpoints.Auth;
 using EngineerNotebook.Shared.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -14,6 +15,9 @@ public static class AuthEndpoints
         endpoints.MapPost("api/auth",
             async ([FromBody] LoginRequest request, [FromServices] SignInManager<ClubMember> signInManager, [FromServices] ITokenClaimsService tokenClaimsService) =>
             {
+                if (request is null)
+                    return Results.BadRequest();
+            
                 var response = new LoginResponse();
                 var result = await signInManager.PasswordSignInAsync(request.Email, request.Password, false, false);
 
@@ -25,7 +29,7 @@ public static class AuthEndpoints
                 if (result.Succeeded)
                     response.Token = await tokenClaimsService.GetTokenAsync(request.Email);
 
-                return response;
+                return Results.Ok(response);
             });
         
         return endpoints;

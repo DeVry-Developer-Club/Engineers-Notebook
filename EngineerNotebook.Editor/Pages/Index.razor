@@ -1,0 +1,18 @@
+﻿@page "/"
+
+<PageTitle>Dashboard</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <AuthorizeView>
+        <Authorized>
+            <MudText Typo="Typo.body1">Welcome to Engineer's Notebook Editor!</MudText>
+        </Authorized>
+        
+        <NotAuthorized>
+            <MudForm>
+                <p>You need to login first...</p>
+                <LoginDisplay/>
+            </MudForm>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudContainer>

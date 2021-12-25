@@ -27,4 +27,10 @@ public class ResultOf<T>
             ErrorMessage = errorMessage,
             StatusCode = statusCode
         };
+
+    public static ResultOf<T> Failure(int statusCode) =>
+        new()
+        {
+            StatusCode = statusCode
+        };
 }

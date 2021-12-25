@@ -4,13 +4,25 @@ using Grpc.Core;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace EndpointTests;
 [TestClass]
 public class UnitTest1
 {
     const string RemoteAddress = "https://localhost:5099";
+        
+    [TestMethod]
+    public void Test()
+    {
+        Regex regex = new(@"^\d+$");
 
+        string test = "123456";
+
+        Assert.IsTrue(regex.IsMatch(test));
+        Assert.IsFalse(regex.IsMatch("1234asdf"));
+    }
+        
     [TestMethod]
     public async Task AddTagToItem()
     {

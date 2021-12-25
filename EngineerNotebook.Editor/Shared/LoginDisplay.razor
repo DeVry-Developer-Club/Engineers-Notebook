@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using EngineerNotebook.Shared.Endpoints.Auth
+@using EngineerNotebook.Shared.Interfaces
+
+@inject IAuthService Auth
+@inject NavigationManager Navigation
+@inject ISnackbar Snack
+
+<MudForm>
+    <MudItem>
+        <MudInput InputType="InputType.Email"
+                      @bind-Value="@_loginRequest.Email"
+                      Label="Email"/>    
+    </MudItem>
+    
+    <MudItem>
+        <MudInput InputType="InputType.Password"
+                      @bind-Value="@_loginRequest.Password"
+                      Label="Password"/>
+    </MudItem>
+    
+    <MudButton OnClick="Login" Color="Color.Primary">Login</MudButton>
+</MudForm>
+
+@code{
+    LoginRequest _loginRequest = new();
+
+    private async Task Login()
+    {
+        var response = await Auth.Login(_loginRequest);
+
+        if (response is null)
+        {
+            Snack.Add("Failed login attempt", Severity.Error);
+            return;
+        }
+
+        // This should reload the page 
+        StateHasChanged();
+    }
+}

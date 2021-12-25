@@ -1,4 +1,3 @@
-using AspNetCore.Identity.Mongo.Model;
 using AspNetCore.Identity.MongoDbCore.Models;
 using EngineerNotebook.Core.Constants;
 using EngineerNotebook.Shared.Authorization;

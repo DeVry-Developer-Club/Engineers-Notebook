@@ -5,6 +5,6 @@ namespace EngineerNotebook.Shared.Interfaces;
 
 public interface IAuthService
 {
-    Task<LoginResponse> Login(LoginRequest request);
+    Task<LoginResponse?> Login(LoginRequest request);
     ClaimsPrincipal ParseToken(string token);
 }
