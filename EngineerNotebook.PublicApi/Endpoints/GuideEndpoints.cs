@@ -14,14 +14,14 @@ public static class GuideEndpoints
 {
     public static IEndpointRouteBuilder AddGuideEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("api/guide",
+        endpoints.MapPost("api/guide",
             async ([FromBody]GetByTagsRequest request, 
                 [FromServices] IAsyncRepository<Documentation> docRepo, 
                 [FromServices] IAsyncRepository<Tag> tagRepo,
                 [FromServices] IHtmlToPdfConverter htmlToPdfConverter, 
                 [FromServices] IRazorToString razor, CancellationToken cancellationToken) =>
             {
-                int required = (int) Math.Ceiling(request.TagIds.Count * 0.65f);
+                int required = Math.Max((int) Math.Ceiling(request.TagIds.Count * 0.68f), 2);
                 
                 // Retrieve all records which have the specified tags (at least contains)
                 var filter = Builders<Documentation>.Filter.ElemMatch(x => x.Tags, x => request.TagIds.Contains(x));
@@ -49,6 +49,9 @@ public static class GuideEndpoints
 
                     pages.Add(await razor.ToViewString("Doc", viewModel));
                 }
+
+                if (!pages.Any())
+                    return Results.NotFound();
                 
                 // Stitch each page together which multiple lines between
                 string compiled = string.Join("<br><br><br>", pages);
