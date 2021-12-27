@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Blazored.LocalStorage;
-using EngineerNotebook.Shared;
 using EngineerNotebook.Shared.Authorization;
 using EngineerNotebook.Shared.Endpoints.Auth;
 using EngineerNotebook.Shared.Interfaces;
@@ -14,13 +13,11 @@ namespace EngineerNotebook.Editor.Services;
 public class AuthService : IAuthService
 {
     private readonly HttpService _httpService;
-    private readonly string _apiUrl;
     private readonly ILocalStorageService _storage;
 
-    public AuthService(HttpService service, BaseUrlConfiguration config, ILocalStorageService storage)
+    public AuthService(HttpService service, ILocalStorageService storage)
     {
         _httpService = service;
-        _apiUrl = config.ApiBase;
         _storage = storage;
     }
 
@@ -62,10 +59,10 @@ public class AuthService : IAuthService
             NameClaimType = ClaimTypes.Name
         };
 
-        var userIdentity = new ClaimsIdentity(nameof(EditorAuthStateProvider),
+        var userIdentity = new ClaimsIdentity( "Bearer",
             user.NameClaimType,
             user.RoleClaimType);
-
+        
         foreach (var claim in user.Claims)
             userIdentity.AddClaim(new(claim.Type, claim.Value));
 

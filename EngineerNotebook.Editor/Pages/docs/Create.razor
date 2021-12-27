@@ -1,0 +1,30 @@
+﻿@page "/docs/create"
+@using EngineerNotebook.Shared.Interfaces
+@using EngineerNotebook.Shared.Endpoints.Tag
+@inject ITagService _tagService
+<PageTitle>New Doc</PageTitle>
+
+@inject NavigationManager _navigationManager
+
+<h1 class="mt-3" style="text-align: center">
+    New Document
+</h1>
+
+<MudContainer>
+    <DocForm OnSave="@OnSave" Tags="@tags.ToArray()"/>
+</MudContainer>
+
+@code {
+    List<TagDto> tags = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        tags = await _tagService.GetAll();
+        await base.OnInitializedAsync();
+    }
+
+    void OnSave(string id)
+    {
+        _navigationManager.NavigateTo($"/docs/view/{id}");
+    }
+}

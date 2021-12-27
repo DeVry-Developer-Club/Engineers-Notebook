@@ -1,0 +1,205 @@
+﻿@using EngineerNotebook.Shared.Interfaces
+@using System.Runtime.CompilerServices
+@using Blazored.TextEditor
+@using EngineerNotebook.Editor.Services
+@using EngineerNotebook.Shared.Endpoints.Doc
+@using EngineerNotebook.Shared.Endpoints.Tag
+@using EngineerNotebook.Shared.Models
+@inject ILogger<DocForm> Logger
+@inject IDocService _docService
+@inject ITagService _tagService
+@inject ISnackbar Snack
+
+<EditForm Model="Doc">
+    <DataAnnotationsValidator/>
+    <MudTextField @bind-Value="Doc.Title" Label="Title" Required="true" RequiredError="Title is required" Class="mt-2 mb-3"/>
+    <MudTextField @bind-Value="Doc.Description" Label="Description" Required="true" RequiredError="Description is required" Class="mb-3"/>
+    
+    <div style="background-color: #F1F1F1; color: black !important">
+        <BlazoredTextEditor @ref="ContentEditor">
+            <ToolbarContent>
+                <select class="ql-header">
+                    <option selected=""></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                </select>
+                <span class="ql-formats">
+                    <button class="ql-bold"></button>
+                    <button class="ql-italic"></button>
+                    <button class="ql-underline"></button>
+                    <button class="ql-strike"></button>
+                </span>
+                <span class="ql-formats">
+                    <select class="ql-color"></select>
+                    <select class="ql-background"></select>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-list" value="ordered"></button>
+                    <button class="ql-list" value="bullet"></button>
+                </span>
+                <span class="ql-formats">
+                    <button class="ql-link"></button>
+                    <InputFile OnChange="Callback"/>
+                </span>
+            </ToolbarContent>
+            <EditorContent>
+                @(new MarkupString(Doc.Contents))
+            </EditorContent>
+        </BlazoredTextEditor>
+        <MudButton Color="Color.Primary" Size="Size.Large" OnClick="@CreateClick">Save</MudButton>
+        @if (Tags != null)
+        {
+            <div class="mt-6">
+                <MudTable Items="Tags"
+                          Hover="true"
+                          Breakpoint="Breakpoint.Sm">
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh>Action</MudTh>
+                    </HeaderContent>
+                    
+                    <RowTemplate Context="tagContext">
+                        <MudTd>@tagContext.Name</MudTd>
+                        <MudTd>@GetDisplayName(tagContext.TagType)</MudTd>
+                        <MudTd>
+                            @if (IsTagAdded(tagContext.Id))
+                            {
+                                <MudButton OnClick="@(()=>RemoveTag(tagContext.Id))" Color="Color.Error">Remove</MudButton>
+                            }
+                            else
+                            {
+                                <MudButton OnClick="(()=>AddTag(tagContext.Id))" Color="Color.Info">Add</MudButton>
+                            }
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+        }
+    </div>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> OnSave { get; set; }
+
+    [Parameter]
+    public DocDto Doc { get; set; } = new();
+
+    [Parameter]
+    public TagDto[] Tags { get; set; }
+
+    [Parameter]
+    public bool IsEdit { get; set; }
+
+    bool success;
+    bool _validForm = false;
+    MudForm form;
+
+    BlazoredTextEditor ContentEditor;
+
+    bool IsTagAdded(string id) => Doc.Tags.Any(x => x == id);
+
+    void RemoveTag(string id)
+    {
+        Doc.Tags.Remove(id);
+    }
+
+    void AddTag(string id)
+    {
+        Doc.Tags.Add(id);
+    }
+
+    string GetDisplayName(TagType type)
+    {
+        switch (type)
+        {
+            case TagType.Phrase:
+                return "Phrase";
+            case TagType.Prefix:
+                return "Prefix";
+            default:
+                return "Value";
+        }
+    }
+
+    // Validate our form is good to go before allowing save
+    bool IsValid()
+    {
+        if (Doc is null || string.IsNullOrEmpty(Doc.Title) ||
+            string.IsNullOrEmpty(Doc.Description))
+        {
+            _validForm = false;
+            return _validForm;
+        }
+
+        _validForm = true;
+        return _validForm;
+    }
+
+    async Task CreateClick()
+    {
+        Doc.Contents = await ContentEditor.GetHTML();
+        
+        if (IsEdit)
+        {
+            var success = await _docService.Edit(new UpdateDocRequest
+            {
+                Contents = Doc.Contents,
+                Description = Doc.Description,
+                Title = Doc.Title,
+                Id = Doc.Id,
+                TagIds = Doc.Tags
+            });
+
+            if (!success.success)
+            {
+                Logger.LogError($"Was unable to edit. {success.statusCode}");
+                Snack.Add("Unable to save");
+            }
+            else
+                Snack.Add("Saved", Severity.Success);
+            
+            Logger.LogInformation($"{OnSave.HasDelegate} - has delegate\n{success.success} | {success.statusCode}");
+
+            await OnSave.InvokeAsync(Doc.Id);
+            return;
+        }
+        
+        var response = await _docService.Create(new CreateDocRequest
+        {
+            Contents = Doc.Contents,
+            Title = Doc.Title,
+            Description = Doc.Description,
+            TagIds = Doc.Tags
+        });
+        
+        // should get a response worth updating the user on
+        if (response is null || string.IsNullOrEmpty(response.Id))
+        {
+            Logger.LogError("Something went wrong with creating a new document");
+            success = false;
+            Snack.Add("Error with saving / creating document", Severity.Error);
+            return;
+        }
+
+        Snack.Add("Created", Severity.Success);
+        success = true;
+        
+        await OnSave.InvokeAsync(response.Id);
+    }
+
+    private async Task Callback(InputFileChangeEventArgs args)
+    {
+        using MemoryStream stream = new();
+        await args.File.OpenReadStream().CopyToAsync(stream);
+        string encodedImage = Convert.ToBase64String(stream.ToArray());
+        string imageSource = string.Format(Util.Base64ImageFormat, args.File.Name.Split(".")[1], encodedImage);
+        await ContentEditor.InsertImage(imageSource);
+    }
+
+}

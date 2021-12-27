@@ -23,7 +23,7 @@ public static class GuideEndpoints
             {
                 int required = (int) Math.Ceiling(request.TagIds.Count * 0.65f);
                 
-                // Retrieve all records which have the specified tags
+                // Retrieve all records which have the specified tags (at least contains)
                 var filter = Builders<Documentation>.Filter.ElemMatch(x => x.Tags, x => request.TagIds.Contains(x));
 
                 var matchingDocs = await docRepo.Find(filter, cancellationToken);
@@ -37,7 +37,11 @@ public static class GuideEndpoints
                 List<string> pages = new();
                 foreach (var doc in matchingDocs)
                 {
-                    var viewModel = new DocumentationViewModel()
+                    // The required number is an attempt to find the "most" fit guide
+                    if (doc.Tags.Intersect(request.TagIds).Count() < required)
+                        continue;
+                    
+                    var viewModel = new DocumentationViewModel
                     {
                         Doc = doc,
                         Tags = tags.Where(x => doc.Tags.Contains(x.Id)).ToList()

@@ -2,7 +2,6 @@
 using EngineerNotebook.Shared.Endpoints;
 using EngineerNotebook.Shared.Endpoints.Doc;
 using EngineerNotebook.Shared.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,25 +13,57 @@ public static class DocEndpoints
 {
     public static IEndpointRouteBuilder AddDocEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("api/docs", async (IAsyncRepository<Documentation> docRepo, CancellationToken cancellationToken) => 
-            await docRepo.Get(cancellationToken));
+        endpoints.MapGet("api/docs",
+            async (IAsyncRepository<Documentation> docRepo, CancellationToken cancellationToken) =>
+            {
+                var items = await docRepo.Get(cancellationToken);
+
+                return items.Select(x => new DocDto
+                {
+                    Id = x.Id,
+                    Contents = x.Contents,
+                    Description = x.Description,
+                    Tags = x.Tags,
+                    Title = x.Title,
+                    CreatedAt = x.CreatedAt,
+                    EditedAt = x.EditedAt,
+                    CreatedByUserId = x.CreatedByUserId,
+                    EditedByUserId = x.EditedByUserId
+                }).ToList();
+            });
 
         endpoints.MapGet("api/docs/{id}",
-            async ([FromQuery] string id, IAsyncRepository<Documentation> docRepo,
+            async ([FromRoute] string id, 
+                IAsyncRepository<Documentation> docRepo,
                 CancellationToken cancellationToken) =>
             {
                 var result = await docRepo.Find(id, cancellationToken);
 
-                if (result is null)
+                if (result is null || result.Value is null)
                     return Results.NotFound();
-                
-                return Results.Ok(result);
+
+                var dto = new DocDto
+                {
+                    Id = result.Value.Id,
+                    Contents = result.Value.Contents,
+                    Description = result.Value.Description,
+                    Title = result.Value.Title,
+                    CreatedAt = result.Value.CreatedAt,
+                    EditedAt = result.Value.EditedAt,
+                    Tags = result.Value.Tags,
+                    CreatedByUserId = result.Value.CreatedByUserId,
+                    EditedByUserId = result.Value.EditedByUserId
+                };
+
+                return Results.Ok(dto);
             });
 
         endpoints.MapPost("api/docs",
-            [Authorize] async ([FromBody]UpdateDocRequest request, 
+            async ([FromBody] UpdateDocRequest request, 
                 [FromServices] IAsyncRepository<Documentation> docRepo, 
-                [FromServices] IAsyncRepository<Tag> tagRepo, HttpContext context, CancellationToken cancellationToken) =>
+                [FromServices] IAsyncRepository<Tag> tagRepo, 
+                HttpContext context, 
+                CancellationToken cancellationToken) =>
             {
                 var item = await docRepo.Find(request.Id, cancellationToken);
 
@@ -60,10 +91,11 @@ public static class DocEndpoints
                 return Results.BadRequest(response.ErrorMessage);
             });
         
-        endpoints.MapPost("api/docs/create", [Authorize] async([FromBody] CreateDocRequest request, 
+        endpoints.MapPost("api/docs/create", async([FromBody] CreateDocRequest request, 
             [FromServices]IAsyncRepository<Documentation> docRepo, 
             [FromServices]IAsyncRepository<Tag> tagRepo, 
-            HttpContext context, CancellationToken cancellationToken) =>
+            HttpContext context, 
+            CancellationToken cancellationToken) =>
         {
             if (request.TagIds is not null && request.TagIds.Any())
             {
@@ -89,12 +121,23 @@ public static class DocEndpoints
             var response = await docRepo.Create(doc, cancellationToken);
 
             if (response.Success)
-                return Results.Ok(response.Value);
+                return Results.Ok(new DocDto
+                {
+                    Id = response.Value.Id,
+                    Contents = response.Value.Contents,
+                    Description = response.Value.Description,
+                    Tags = response.Value.Tags,
+                    Title = response.Value.Title,
+                    CreatedAt = response.Value.CreatedAt,
+                    EditedAt = response.Value.EditedAt,
+                    CreatedByUserId = response.Value.CreatedByUserId,
+                    EditedByUserId = response.Value.EditedByUserId
+                });
 
             return Results.BadRequest(response.ErrorMessage);
         });
 
-        endpoints.MapDelete("api/docs/{id}", [Authorize] async ([FromBody] string id,
+        endpoints.MapDelete("api/docs/{id}", async ([FromRoute] string id,
             IAsyncRepository<Documentation> docRepo,
             CancellationToken cancellationToken) =>
         {

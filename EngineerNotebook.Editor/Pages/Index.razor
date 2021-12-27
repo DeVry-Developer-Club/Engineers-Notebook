@@ -1,11 +1,40 @@
 ﻿@page "/"
+@using EngineerNotebook.Shared.Interfaces
+@using EngineerNotebook.Shared.Endpoints.Doc
+@inject ISnackbar Snack
+@inject IDocService Docs
+@inject ITagService Tags
+@inject NavigationManager NavigationManager
 
 <PageTitle>Dashboard</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Medium">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
     <AuthorizeView>
         <Authorized>
-            <MudText Typo="Typo.body1">Welcome to Engineer's Notebook Editor!</MudText>
+            <MudButton OnClick="@(()=>NavigationManager.NavigateTo("/docs/create"))" StartIcon="@Icons.Filled.Add" Color="Color.Info">New</MudButton>
+            <MudTable Items="@docs"
+                      Hover="true"
+                      Breakpoint="Breakpoint.Sm"
+                      Loading="@_loading"
+                      LoadingProgressColor="Color.Info"
+                      OnRowClick="@((TableRowClickEventArgs<DocDto> args) => NavigationManager.NavigateTo($"docs/view/{args.Item.Id}"))">
+                <HeaderContent>
+                    <MudTh>Title</MudTh>
+                    <MudTh>Description</MudTh>
+                    <MudTh>Created By</MudTh>
+                    <MudTh>Tags</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate Context="rowContext">
+                    <MudTd DataLabel="Title">@rowContext.Title</MudTd>
+                    <MudTd DataLabel="Description">@rowContext.Description</MudTd>
+                    <MudTd DataLabel="Created By">@(rowContext.Tags is not null ? GetTags(rowContext.Tags) : "")</MudTd>
+                    <MudTd>
+                        <MudButton OnClick="@(() => NavigationManager.NavigateTo($"/docs/view/{rowContext.Id}"))">View</MudButton>
+                        <MudButton OnClick="@(() => Delete(rowContext.Id))" Color="Color.Error">Delete</MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
         </Authorized>
         
         <NotAuthorized>
@@ -16,3 +45,56 @@
         </NotAuthorized>
     </AuthorizeView>
 </MudContainer>
+
+@code{
+
+    [CascadingParameter]
+    protected Task<AuthenticationState> AuthState { get; set; }
+
+    List<DocDto> docs = new();
+    Dictionary<string, string> tags = new();
+    bool _loading = true;
+
+    async Task Delete(string id)
+    {
+        var response = await Docs.Delete(id);
+
+        if (response is null || string.IsNullOrEmpty(response.Status))
+        {
+            Snack.Add("Unable to delete", Severity.Error);
+            return;
+        }
+
+        var doc = docs.FirstOrDefault(x => x.Id == id);
+        
+        // remove from our local
+        if(doc is not null)
+            docs.Remove(doc);
+        
+        StateHasChanged();
+    }
+
+    string GetTags(List<string> ids)
+        => string.Join(", ", tags.Where(x => ids.Contains(x.Key)).Select(x => x.Value));
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        
+        var user = (await AuthState).User;
+        
+        if (user.Identity is { IsAuthenticated: false })
+            return;
+        
+        var docTask = Docs.GetAll();
+        var tagTask = Tags.GetAll();
+
+        await Task.WhenAll(docTask, tagTask);
+
+        docs = docTask.Result;
+        tags = tagTask.Result.ToDictionary(x => x.Id, x => x.Name);
+        _loading = false;
+    }
+
+}

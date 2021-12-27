@@ -26,7 +26,12 @@ public static class TagEndpoints
             var response = await tagRepo.Create(tag, cancellationToken);
 
             if (response.Success)
-                return Results.Ok(response.Value);
+                return Results.Ok(new TagDto
+                {
+                  Id   = response.Value.Id,
+                  Name = response.Value.Name,
+                  TagType = response.Value.TagType
+                });
 
             return Results.BadRequest(response.ErrorMessage);
         });
@@ -71,12 +76,17 @@ public static class TagEndpoints
 
         endpoints.MapGet("api/tags", async ([FromServices] IAsyncRepository<Tag> tagRepo, CancellationToken cancellationToken) => await tagRepo.Get(cancellationToken));
         endpoints.MapGet("api/tags/{id}",
-            async ([FromQuery] string id, [FromServices] IAsyncRepository<Tag> tagRepo, CancellationToken cancellationToken) =>
+            async ([FromRoute] string id, [FromServices] IAsyncRepository<Tag> tagRepo, CancellationToken cancellationToken) =>
             {
                 var response = await tagRepo.Find(id, cancellationToken);
 
                 if (response.Success)
-                    return Results.Ok(response.Value);
+                    return Results.Ok(new TagDto
+                    {
+                        Id   = response.Value.Id,
+                        Name = response.Value.Name,
+                        TagType = response.Value.TagType
+                    });
 
                 return Results.NotFound(response.ErrorMessage);
             });

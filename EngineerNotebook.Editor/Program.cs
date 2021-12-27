@@ -14,7 +14,13 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 var baseUrlConfig = new BaseUrlConfiguration();
 builder.Configuration.Bind(BaseUrlConfiguration.CONFIG_NAME, baseUrlConfig);
-builder.Services.AddSingleton(sp => new HttpClient {BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)});
+
+var handler = new HttpClientHandler
+{
+    ClientCertificateOptions = ClientCertificateOption.Manual,
+};
+
+builder.Services.AddSingleton(sp => new HttpClient(handler){BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)});
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
@@ -25,5 +31,7 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped(sp => baseUrlConfig);
 builder.Services.AddScoped<HttpService>();
+builder.Services.AddScoped<IDocService, DocService>();
+builder.Services.AddScoped<ITagService, TagService>();
 
 await builder.Build().RunAsync();

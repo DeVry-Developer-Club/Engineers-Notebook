@@ -1,6 +1,21 @@
-﻿namespace EngineerNotebook.Shared.Endpoints.Doc;
+﻿using System;
 
-public class DocResponse : IDtoResponse<Documentation>
+namespace EngineerNotebook.Shared.Endpoints.Doc;
+
+public class DocResponse : IDtoResponse<DocDto>
 {
-    public Documentation Result { get; set; }
+    public DocDto Result { get; set; }
+}
+
+public class DocDto
+{
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public string Contents { get; set; }
+    public string CreatedByUserId { get; set; }
+    public string EditedByUserId { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset EditedAt { get; set; }
+    public List<string> Tags { get; set; } = new();
+    public string Id { get; set; }
 }

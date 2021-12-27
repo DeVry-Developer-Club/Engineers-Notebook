@@ -1,0 +1,100 @@
+﻿@page "/docs/view/{DocId}"
+@using EngineerNotebook.Shared.Interfaces
+@using EngineerNotebook.Shared.Endpoints.Doc
+@using EngineerNotebook.Shared.Endpoints.Tag
+
+@inject IDocService _docService
+@inject ITagService _tagService
+@inject NavigationManager _navigationManager
+
+<MudButton OnClick="@ToggleEdit" Color="@Color">@(!_isEditMode ? "Edit" : "View Only")</MudButton>
+
+@if (_isEditMode)
+{
+    <MudContainer>
+        <DocForm Doc="_doc" IsEdit="true" Tags="_tags.Values.ToArray()" OnSave="@OnSave"/>
+    </MudContainer>
+}
+else
+{
+    <MudPaper Height="100" Width="100">
+        <MudContainer MaxWidth="MaxWidth.Medium">
+            <MudPaper Elevation="2" Width="100%" Square="true" Class="mud-theme-info pa-16 ma-2 mt-3">
+                <MudText Typo="Typo.h3">@_doc.Title</MudText>
+                <MudText Typo="Typo.body1">@_doc.Description</MudText>
+                @if (_doc.Tags is not null)
+                {
+                    <div class="mt-4">
+                        <MudChipSet ReadOnly="true">
+                            @for (int i = 0; i < _doc.Tags.Count; i++)
+                            {
+                                Color chipColor = GetChipColor(i);
+                                TagDto t = _tags[_doc.Tags[i]];
+                                
+                                <MudChip Text="@t.Name" Color="@chipColor">@t.Name</MudChip>
+                            }
+                        </MudChipSet>
+                    </div>
+                }
+            </MudPaper>
+            @(new MarkupString(_doc.Contents))
+        </MudContainer>
+    </MudPaper>
+}
+
+@code {
+
+    [Parameter]
+    public string DocId { get; set; }
+
+    bool _isEditMode = false;
+    DocDto _doc = new();
+    Dictionary<string, TagDto> _tags;
+    
+    Color Color => _isEditMode ? Color.Tertiary : Color.Success;
+
+    Color[] _colors =
+    {
+        Color.Primary,
+        Color.Secondary,
+        Color.Success,
+        Color.Warning,
+        Color.Dark
+    };
+
+    Color GetChipColor(int index) => _colors[index % _colors.Length];
+
+    void ToggleEdit()
+    {
+        _isEditMode = !_isEditMode;
+    }
+
+    void OnSave(string id)
+    {
+        _isEditMode = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Doc: {DocId}");
+        if (string.IsNullOrEmpty(DocId))
+            _navigationManager.NavigateTo("/");
+
+        var docTask = _docService.GetById(DocId);
+        var tagTask = _tagService.GetAll();
+
+        await Task.WhenAll(docTask, tagTask);
+
+        if (docTask.Result is null)
+        {
+            _navigationManager.NavigateTo("/");
+            return;
+        }
+        
+        _doc = docTask.Result;
+        _tags = tagTask.Result.ToDictionary(x=>x.Id, x=>x);
+        
+        Console.WriteLine($"{_doc.Title} {_doc.Description} {_doc.Id}");
+            await base.OnInitializedAsync();
+    }
+}

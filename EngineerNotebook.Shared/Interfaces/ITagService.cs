@@ -5,9 +5,9 @@ namespace EngineerNotebook.Shared.Interfaces;
 
 public interface ITagService
 {
-    Task<Tag> Create(CreateTagRequest request);
-    Task<Tag> Update(UpdateTagRequest request);
-    Task<DeleteResponse> Delete(string id);
-    Task<Tag> GetById(string id);
-    Task<List<Tag>> GetAll();
+    Task<TagDto?> Create(CreateTagRequest request);
+    Task<TagDto> Update(UpdateTagRequest request);
+    Task<DeleteResponse?> Delete(string id);
+    Task<TagDto> GetById(string id);
+    Task<List<TagDto>> GetAll();
 }
