@@ -13,6 +13,7 @@
         <Authorized>
             <MudButton OnClick="@(()=>NavigationManager.NavigateTo("/docs/create"))" StartIcon="@Icons.Filled.Add" Color="Color.Info">New</MudButton>
             <MudTable Items="@docs"
+                      Virtualize="true"
                       Hover="true"
                       Breakpoint="Breakpoint.Sm"
                       Loading="@_loading"

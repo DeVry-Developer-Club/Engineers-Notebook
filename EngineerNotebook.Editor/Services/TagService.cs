@@ -1,4 +1,5 @@
-﻿using EngineerNotebook.Shared.Endpoints;
+﻿using System.Net;
+using EngineerNotebook.Shared.Endpoints;
 using EngineerNotebook.Shared.Endpoints.Tag;
 using EngineerNotebook.Shared.Interfaces;
 
@@ -20,15 +21,17 @@ public class TagService : ITagService
     /// <param name="request"></param>
     /// <returns>The same information with the addition of the generated PK</returns>
     public async Task<TagDto?> Create(CreateTagRequest request)
-        => (await _httpService.HttpPost<TagResponse>(Endpoints.TAG_CREATE, request))?.Result;
+        => await _httpService.HttpPost<TagDto>(Endpoints.TAG_CREATE, request);
 
     /// <summary>
     /// Attempts to edit an existing tag record with the values provided in <paramref name="request"/>
     /// </summary>
     /// <param name="request"></param>
     /// <returns>Updated version of <see cref="TagDto"/></returns>
-    public async Task<TagDto?> Update(UpdateTagRequest request) =>
-        (await _httpService.HttpPut<TagResponse>(Endpoints.TAG_BASE, request))?.Result;
+    public async Task<(bool success, HttpStatusCode statusCode)> Update(UpdateTagRequest request)
+    {
+        return await _httpService.HttpPost(Endpoints.TAG_BASE, request);
+    }
 
     /// <summary>
     /// Attempts to delete a Tag record from database that has <paramref name="id"/>
@@ -39,7 +42,7 @@ public class TagService : ITagService
     {
         var response = await _httpService.HttpDelete<DeleteResponse>(Endpoints.TAG_BASE, id);
 
-        if (response is null || string.IsNullOrEmpty(response.Status))
+        if (response is null)
             _logger.LogError($"Something went wrong trying to delete tag with id: {id}");
 
         return response;

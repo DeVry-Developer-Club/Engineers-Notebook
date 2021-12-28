@@ -1,0 +1,126 @@
+﻿@page "/tags"
+@using EngineerNotebook.Shared.Interfaces
+@using EngineerNotebook.Shared.Endpoints.Tag
+@using EngineerNotebook.Shared.Models
+
+@inject ISnackbar _snackbar
+@inject NavigationManager _navigationManager
+@inject ITagService _tagService
+@inject IDialogService _dialogService
+
+<PageTitle>Tags</PageTitle>
+
+<MudButton StartIcon="@Icons.Filled.Add" Color="Color.Info" OnClick="Create"></MudButton>
+<MudTable Items="_tags"
+          Hover="true"
+          Elevation="3"
+          Striped="true"
+          Virtualize="true">
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Type</MudTh>
+        <MudTd></MudTd>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.Name</MudTd>
+        <MudTd>@GetText(context.TagType)</MudTd>
+        <MudTd>
+            <MudButton Color="Color.Info" OnClick="@(()=>Edit(context))">View</MudButton>
+            <MudButton Color="Color.Error" OnClick="@(()=>Delete(context))">Delete</MudButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    List<TagDto> _tags = new();
+
+    async Task Edit(TagDto tag)
+    {
+        DialogParameters parameters = new();
+        parameters.Add("Tag", tag);
+        var dialog = _dialogService.Show<TagDialog>("Tag Editor", parameters);
+
+        var result = await dialog.Result;
+
+        if (result.Cancelled || result.Data is null)
+            return;
+        
+        tag = result.Data as TagDto;
+        var response = await _tagService.Update(new UpdateTagRequest
+        {
+            Id = tag.Id,
+            Name = tag.Name,
+            TagType = tag.TagType
+        });
+
+        if (!response.success)
+            _snackbar.Add("Failed to update tag", Severity.Error);
+        else
+            _snackbar.Add("Tag updated", Severity.Success);
+        
+        StateHasChanged();
+    }
+
+    async Task Delete(TagDto tag)
+    {
+        var response = await _tagService.Delete(tag.Id);
+        
+        if (response is null || response.Status.Equals("Deleted", StringComparison.InvariantCultureIgnoreCase))
+        {
+            _snackbar.Add("Successfully deleted", Severity.Success);
+            _tags.Remove(tag);
+        }
+        else
+            _snackbar.Add("Failed to delete record", Severity.Error);
+    }
+
+    async Task Create()
+    {
+        DialogParameters parameters = new();
+        parameters.Add("Tag", new TagDto());
+
+        var dialog = _dialogService.Show<TagDialog>("Tag Editor", parameters);
+        var result = await dialog.Result;
+
+        if (result.Cancelled || result.Data is null)
+            return;
+
+        var tag = result.Data as TagDto;
+        var response = await _tagService.Create(new()
+        {
+            Name = tag.Name,
+            TagType = tag.TagType
+        });
+        Console.WriteLine(response is null);
+        if (response != null)
+        {
+            _tags.Add(response);
+            _snackbar.Add("Tag created successfully", Severity.Success);
+            StateHasChanged();
+        }
+        else
+            _snackbar.Add("Failed to create tag", Severity.Error);
+
+    }
+    
+    string GetText(TagType type)
+    {
+        switch (type)
+        {
+            case TagType.Phrase:
+                return "Phrase";
+            case TagType.Prefix:
+                return "Prefix";
+            default:
+                return "Value";
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _tags = await _tagService.GetAll();
+        
+        await base.OnInitializedAsync();
+    }
+
+}

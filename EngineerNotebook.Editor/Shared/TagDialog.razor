@@ -1,0 +1,37 @@
+﻿@using EngineerNotebook.Shared.Endpoints.Tag
+@using EngineerNotebook.Shared.Models
+<MudDialog>
+    <DialogContent>
+        <MudForm>
+            <MudItem>
+                <MudInput InputType="InputType.Text"
+                          @bind-Value="@Tag.Name"
+                          Label="Name"
+                          Required="true"/>
+            </MudItem>
+            <MudItem>
+                <MudSelect T="TagType" Label="Type" @bind-Value="@Tag.TagType">
+                    <MudSelectItem T="TagType" Value="TagType.Prefix"/>
+                    <MudSelectItem T="TagType" Value="TagType.Value"/>
+                    <MudSelectItem T="TagType" Value="TagType.Phrase"/>
+                </MudSelect>
+            </MudItem>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Close">Save</MudButton>
+        <MudButton Color="Color.Dark" OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public TagDto Tag { get; set; }
+
+    void Cancel() => MudDialog.Close(DialogResult.Cancel());
+    void Close() => MudDialog.Close(DialogResult.Ok(Tag));
+}

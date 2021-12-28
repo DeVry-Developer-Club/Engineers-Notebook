@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Threading;
+using EngineerNotebook.Shared.Endpoints;
 using EngineerNotebook.Shared.Endpoints.Tag;
 using EngineerNotebook.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +15,7 @@ public static class TagEndpoints
 {
     public static IEndpointRouteBuilder AddTagEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("api/tags/create", [Authorize] async ([FromBody]CreateTagRequest request, 
+        endpoints.MapPost("api/tags/create", async ([FromBody]CreateTagRequest request, 
             [FromServices] IAsyncRepository<Tag> tagRepo,
             CancellationToken cancellationToken) =>
         {
@@ -36,7 +38,7 @@ public static class TagEndpoints
             return Results.BadRequest(response.ErrorMessage);
         });
 
-        endpoints.MapPost("api/tags", [Authorize] async ([FromBody]UpdateTagRequest request, 
+        endpoints.MapPost("api/tags", async ([FromBody]UpdateTagRequest request, 
             [FromServices] IAsyncRepository<Tag> tagRepo,
             CancellationToken cancellationToken) =>
         {
@@ -57,8 +59,8 @@ public static class TagEndpoints
             return Results.BadRequest(response.ErrorMessage);
         });
 
-        endpoints.MapDelete("api/tags", [Authorize]
-            async ([FromBody] string id, [FromServices] IAsyncRepository<Tag> tagRepo, CancellationToken cancellationToken) =>
+        endpoints.MapDelete("api/tags/{id}", 
+            async ([FromRoute] string id, [FromServices] IAsyncRepository<Tag> tagRepo, CancellationToken cancellationToken) =>
             {
                 var find = await tagRepo.Find(id, cancellationToken);
 
@@ -68,13 +70,20 @@ public static class TagEndpoints
                 var response = await tagRepo.Delete(id, cancellationToken);
 
                 if (response.Success)
-                    return Results.Ok();
+                    return Results.Ok(new DeleteResponse());
 
                 return Results.BadRequest(response.ErrorMessage);
             });
 
 
-        endpoints.MapGet("api/tags", async ([FromServices] IAsyncRepository<Tag> tagRepo, CancellationToken cancellationToken) => await tagRepo.Get(cancellationToken));
+        endpoints.MapGet("api/tags", async ([FromServices] IAsyncRepository<Tag> tagRepo, CancellationToken cancellationToken) => (await tagRepo.Get(cancellationToken))
+            .Select(x=>new TagDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                TagType = x.TagType
+            }).ToList());
+        
         endpoints.MapGet("api/tags/{id}",
             async ([FromRoute] string id, [FromServices] IAsyncRepository<Tag> tagRepo, CancellationToken cancellationToken) =>
             {
