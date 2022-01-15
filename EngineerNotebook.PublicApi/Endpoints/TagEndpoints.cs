@@ -1,9 +1,7 @@
-﻿using System.Net;
-using System.Threading;
+﻿using System.Threading;
 using EngineerNotebook.Shared.Endpoints;
 using EngineerNotebook.Shared.Endpoints.Tag;
 using EngineerNotebook.Shared.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

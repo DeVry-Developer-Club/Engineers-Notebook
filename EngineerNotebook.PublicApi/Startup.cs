@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Razor.Templating.Core;
 using AspNetCore.Identity.MongoDbCore.Models;
+using EngineerNotebook.Bot;
 using EngineerNotebook.PublicApi.Endpoints;
 
 namespace EngineerNotebook.PublicApi
@@ -57,6 +58,8 @@ namespace EngineerNotebook.PublicApi
             services.AddRazorTemplating();
             RazorTemplateEngine.Initialize();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            services.AddScoped<IGuideService, GuideService>();
+            services.AddEngineeringBot();
             
             #endregion
 

@@ -6,6 +6,12 @@ EXPOSE 443
 RUN mkdir -p "/https"
 COPY ["https/aspnetapp.pfx", "/https/aspnetapp.pfx"]
 RUN chmod 666 /https/aspnetapp.pfx
+RUN apt update
+RUN apt install -y --no-install-recommends libgdiplus libc6-dev
+RUN apt clean
+RUN apt --reinstall install libsigsegv2
+RUN /sbin/ldconfig -v
+RUN rm -rf /var/lib/apt/lists/*
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src

@@ -32,6 +32,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\EngineerNotebook.Bot\EngineerNotebook.Bot.csproj" />
       <ProjectReference Include="..\EngineerNotebook.Core\EngineerNotebook.Core.csproj" />
       <ProjectReference Include="..\EngineerNotebook.Infrastructure\EngineerNotebook.Infrastructure.csproj" />
     </ItemGroup>
