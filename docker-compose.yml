@@ -5,6 +5,14 @@ networks:
     name: engineers-notebook
 
 services:
+  puppeteer:
+    container_name: puppeteer
+    hostname: puppeteer
+    image: ghcr.io/ccjmne/puppeteer-html2pdf:latest
+    restart: always
+    ports:
+      - 9999:3000
+  
   engineer-db:
     container_name: engineer-db
     hostname: engineer-db
@@ -12,7 +20,7 @@ services:
     restart: always    
     volumes:
       - D:\test:/data/db
-      - ${USERPROFILE}\source\repos\DeVry-Developer-Club\Engineers-Notebook\init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - C:\Users\jonbr_2lj7acl\source\repos\DeVry-Developer-Club\Engineers-Notebook\init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     ports:
       - 27017:27017
     environment:
@@ -24,7 +32,7 @@ services:
 
   public-api:
     container_name: public-api
-    image: engineer-notebook-public-api:$TAG
+    image: engineer-notebook-public-api:test
     command: ["./wait-for", "engineer-db:27017", "--", "dotnet", "EngineerNotebook.PublicApi.dll"]
     environment:
       - ASPNETCORE_URLS=https://+:443;http://+:80
@@ -38,5 +46,5 @@ services:
       - "5099:443"
       - "6000:80"
     volumes:
-      - ${USERPROFILE}\source\repos\DeVry-Developer-Club\Engineers-Notebook\EngineerNotebook.PublicApi\appsettings.json:/app/appsettings.json
+      - C:\Users\jonbr_2lj7acl\source\repos\DeVry-Developer-Club\Engineers-Notebook\EngineerNotebook.PublicApi\appsettings.json:/app/appsettings.json
     
