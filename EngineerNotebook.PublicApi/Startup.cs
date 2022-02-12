@@ -59,7 +59,9 @@ namespace EngineerNotebook.PublicApi
             RazorTemplateEngine.Initialize();
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             services.AddScoped<IGuideService, GuideService>();
-            services.AddEngineeringBot();
+            
+            if(!Configuration.GetValue<bool>("DisableBot"))
+                services.AddEngineeringBot();
             
             #endregion
 

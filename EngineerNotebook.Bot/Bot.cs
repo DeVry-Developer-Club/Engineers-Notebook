@@ -15,16 +15,20 @@ public class Bot : BackgroundService
     private readonly IAsyncRepository<Tag> _tagRepo;
     private readonly IGuideService _guideService;
     
-    private List<Tag> cachedTags;
-    private Regex regex;
-
+    private List<Tag> _cachedTags;
+    private Regex _generalRegex;
+    private Regex _phraseRegex;
+    
     private readonly IServiceScope _scope;
-    private CancellationTokenSource tokenSource = new();
+    private readonly CancellationTokenSource _tokenSource = new();
     
     public override void Dispose()
     {
         base.Dispose();
         _scope?.Dispose();
+
+        _tokenSource.Cancel();
+        _tokenSource.Dispose();
     }
 
     public Bot(DiscordSocketClient client, IServiceProvider serviceProvider,
@@ -46,7 +50,7 @@ public class Bot : BackgroundService
         Task.Run(async () =>
         {
             await RefreshInterval();
-        });
+        }, _tokenSource.Token);
     }
     
     private async Task ClientOnMessageReceived(SocketMessage arg)
@@ -54,7 +58,7 @@ public class Bot : BackgroundService
         if (arg.Author.IsBot)
             return;
         
-        List<Tag> tags = new();
+        List<Tag> tags;
 
         try
         {
@@ -84,9 +88,9 @@ public class Bot : BackgroundService
         if (guide is null)
             return;
 
-        using var stream = new MemoryStream(guide);
+        await using var stream = new MemoryStream(guide);
         
-        string filename = $"{arg.Author.Username}_guide.pdf";
+        var filename = $"{arg.Author.Username}_guide.pdf";
         var embed = new EmbedBuilder
         {
             ImageUrl = $"attachment://{filename}",
@@ -112,31 +116,44 @@ public class Bot : BackgroundService
     {
         if (string.IsNullOrEmpty(message))
             return Task.FromResult<List<Tag>>(new());
+        
+        var matches = _generalRegex.Matches(message.ToLower());
+        var phraseMatches = _phraseRegex.Matches(message.ToLower());
 
-        var matches = regex.Matches(message.ToLower());
-        var tags = matches
+        var phrases = phraseMatches
+            .SelectMany(x => x.Groups.Values.Select(x=>x.Value))
+            .Distinct();
+        
+        var tags = matches.Concat(phraseMatches)
             .SelectMany(x => x.Groups
                 .Values
                 .SelectMany(y => y.Value
                     .Split(" ")))
             .Distinct();
 
-        return Task.FromResult(cachedTags.Where(x => tags.Contains(x.Name.ToLower())).ToList());
+        tags = tags.Concat(phrases);
+        
+        return Task.FromResult(_cachedTags.Where(x => tags.Contains(x.Name.ToLower())).ToList());
     }
 
     private async Task RefreshInterval()
     {
-        TimeSpan span = TimeSpan.FromMinutes(1);
+        var span = TimeSpan.FromMinutes(1);
         
-        while (!tokenSource.Token.IsCancellationRequested)
+        while (!_tokenSource.Token.IsCancellationRequested)
         {
-            cachedTags = (await _tagRepo.Get()).ToList();
+            _cachedTags = (await _tagRepo.Get()).ToList();
 
-            string all = string.Join("|", cachedTags.Where(x => x.TagType != TagType.Phrase)
+            string all = string.Join("|", _cachedTags.Where(x => x.TagType != TagType.Phrase)
                     .Select(x => x.Name))
                 .Replace("#",@"\043");
-        
-            regex = new($@"({all})\s({all})", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+
+            string asPhrase = string.Join("|", _cachedTags.Where(x => x.TagType == TagType.Phrase)
+                .Select(x => x.Name));
+            
+            _generalRegex = new($@"({all})\s({all})", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+            _phraseRegex = new($@"({asPhrase})\s({all})", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+            
             await Task.Delay(span);
         }
     }
