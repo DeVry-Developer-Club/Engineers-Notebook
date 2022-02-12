@@ -4,8 +4,6 @@ EXPOSE 80
 EXPOSE 443
 
 RUN mkdir -p "/https"
-COPY ["https/aspnetapp.pfx", "/https/aspnetapp.pfx"]
-RUN chmod 666 /https/aspnetapp.pfx
 RUN apt update
 RUN apt clean
 RUN apt --reinstall install libsigsegv2
